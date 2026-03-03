@@ -1,10 +1,245 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="refresh" content="0; url=https://app.neo.space/mail/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Astral Forge Mail</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Astral Forge • Mail</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    :root{
+      --bg:#07070a;
+      --panel:rgba(16,16,22,.78);
+      --panel2:rgba(12,12,16,.55);
+      --text:#e8e8ee;
+      --muted:#a6a6b3;
+      --line:rgba(255,255,255,.10);
+      --glow:rgba(180,140,70,.22);
+      --accent:#caa35a;
+      --accent2:#7b5b2a;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 12%, rgba(202,163,90,.10), transparent 55%),
+        radial-gradient(700px 420px at 80% 18%, rgba(202,163,90,.08), transparent 55%),
+        radial-gradient(900px 700px at 50% 110%, rgba(50,60,120,.10), transparent 60%),
+        linear-gradient(180deg, #050508 0%, #07070a 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+    }
+    .wrap{width:min(980px,100%)}
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+      opacity:.95;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-weight:700;
+      font-size:13px;
+      color:rgba(232,232,238,.9);
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, #ffd79a, var(--accent));
+      box-shadow: 0 0 0 6px rgba(202,163,90,.10);
+      flex:0 0 auto;
+    }
+    .pillbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .pill{
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, var(--panel) 0%, rgba(10,10,14,.82) 100%);
+      border-radius:var(--radius);
+      box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
+      overflow:hidden;
+      position:relative;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(600px 220px at 20% 0%, var(--glow), transparent 60%);
+      pointer-events:none;
+      filter: blur(0px);
+      opacity:.9;
+    }
+    .inner{
+      position:relative;
+      padding:34px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:24px;
+    }
+    @media (max-width:860px){
+      .inner{grid-template-columns:1fr}
+      .pillbar{justify-content:flex-start}
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:34px;
+      line-height:1.12;
+      letter-spacing:.02em;
+    }
+    .sub{
+      margin:0 0 18px 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      max-width:62ch;
+    }
+    .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:650;
+      letter-spacing:.01em;
+      transition: transform .08s ease, border-color .18s ease, background .18s ease;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(202,163,90,.38); background: rgba(202,163,90,.08)}
+    .btn.primary{
+      border-color: rgba(202,163,90,.45);
+      background: linear-gradient(180deg, rgba(202,163,90,.22), rgba(123,91,42,.14));
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+    }
+    .btn.primary:hover{background: linear-gradient(180deg, rgba(202,163,90,.26), rgba(123,91,42,.18))}
+    .btn .icon{width:18px;height:18px;opacity:.9}
+    .panel{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel2), rgba(0,0,0,.14));
+      border-radius:16px;
+      padding:16px;
+    }
+    .panel h2{
+      margin:0 0 10px 0;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:rgba(232,232,238,.86);
+    }
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-top:1px solid rgba(255,255,255,.06)}
+    .row:first-of-type{border-top:none; padding-top:0}
+    .k{color:var(--muted); font-size:12px}
+    .v{font-size:12px; color:rgba(232,232,238,.92)}
+    .footer{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 18px;
+      border-top:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      color:rgba(166,166,179,.92);
+      font-size:12px;
+    }
+    .link{
+      color:rgba(202,163,90,.95);
+      text-decoration:none;
+    }
+    .link:hover{text-decoration:underline}
+    .note{opacity:.85}
+  </style>
 </head>
-<body>Redirecting…</body>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span>ASTRAL FORGE • MAIL PORTAL</span>
+      </div>
+      <div class="pillbar">
+        <div class="pill">Ops surface</div>
+        <div class="pill">Branded entrypoint</div>
+        <div class="pill">Neo-backed</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="inner">
+        <div>
+          <h1>Mail Access</h1>
+          <p class="sub">
+            This portal routes you into the Astral Forge mailbox. Use it as the single entrypoint
+            from your Switchboard so the system stays cohesive.
+          </p>
+
+          <div class="actions">
+            <a class="btn primary" href="https://app.neo.space/mail/" rel="noopener">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6.5h16v11H4v-11Z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="m4.5 7 7.5 6 7.5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Open Mail
+            </a>
+
+            <a class="btn" href="https://astralforge.studio/admin" rel="noopener">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 6 4 12l6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 12h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              Back to Switchboard
+            </a>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Status</h2>
+          <div class="row">
+            <div class="k">Mailbox</div>
+            <div class="v">scribe@astralforge.studio</div>
+          </div>
+          <div class="row">
+            <div class="k">Endpoint</div>
+            <div class="v">mail.astralforge.studio</div>
+          </div>
+          <div class="row">
+            <div class="k">Provider</div>
+            <div class="v">Neo (webmail)</div>
+          </div>
+          <div class="row">
+            <div class="k">Mode</div>
+            <div class="v">Gateway</div>
+          </div>
+          <div class="row">
+            <div class="k">Tip</div>
+            <div class="v">Pin this tab.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="note">Astral Forge • Operator Surface</div>
+        <div><a class="link" href="https://astralforge.studio" rel="noopener">astralforge.studio</a></div>
+      </div>
+    </div>
+  </div>
+</body>
 </html>
