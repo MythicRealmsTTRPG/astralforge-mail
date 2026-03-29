@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Astral Forge Mail</title>
+  <meta
+    name="description"
+    content="Astral Forge Mail — internal communications console for inbox, sent mail, drafts, labels, and system mail management."
+  />
+
   <style>
     :root{
       --bg:#0a0907;
@@ -27,7 +32,7 @@
       --radius:18px;
       --radius-sm:12px;
       --topbar-h:72px;
-      --sidebar-w:248px;
+      --sidebar-w:264px;
     }
 
     *{
@@ -49,6 +54,22 @@
       overflow:hidden;
     }
 
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button,
+    input,
+    select,
+    textarea{
+      font:inherit;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
     .app{
       display:grid;
       grid-template-rows:var(--topbar-h) 1fr;
@@ -65,6 +86,7 @@
       border-bottom:1px solid rgba(200,169,107,.14);
       background:rgba(15,11,8,.78);
       backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
     }
 
     .brand-wrap{
@@ -113,6 +135,7 @@
       display:flex;
       flex-direction:column;
       line-height:1.1;
+      min-width:0;
     }
 
     .brand-text strong{
@@ -121,6 +144,7 @@
       font-weight:700;
       letter-spacing:.01em;
       color:var(--text);
+      white-space:nowrap;
     }
 
     .brand-text span{
@@ -129,6 +153,7 @@
       letter-spacing:.08em;
       text-transform:uppercase;
       margin-top:3px;
+      white-space:nowrap;
     }
 
     .searchbar{
@@ -144,11 +169,6 @@
       max-width:820px;
       width:100%;
       justify-self:center;
-    }
-
-    .searchbar svg,
-    .toolbar-right svg{
-      opacity:.86;
     }
 
     .searchbar input{
@@ -272,6 +292,8 @@
       font-size:13px;
       font-weight:700;
       opacity:.9;
+      min-width:22px;
+      text-align:right;
     }
 
     .sidebar-label{
@@ -280,6 +302,12 @@
       font-size:12px;
       text-transform:uppercase;
       letter-spacing:.12em;
+    }
+
+    .sidebar-separator{
+      height:1px;
+      margin:16px 10px;
+      background:linear-gradient(90deg, transparent, rgba(200,169,107,.12), transparent);
     }
 
     /* Content */
@@ -292,7 +320,7 @@
 
     .mail-frame{
       display:grid;
-      grid-template-rows:auto auto 1fr;
+      grid-template-rows:auto auto auto 1fr;
       height:100%;
       border:1px solid rgba(200,169,107,.12);
       border-radius:24px;
@@ -327,6 +355,7 @@
       cursor:pointer;
       appearance:none;
       position:relative;
+      flex:none;
     }
 
     .checkbox:checked{
@@ -351,7 +380,73 @@
       font-size:13px;
     }
 
-    /* Tabs */
+    .view-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 18px;
+      border-bottom:1px solid var(--border-soft);
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    }
+
+    .view-title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .view-title h1{
+      margin:0;
+      font-size:20px;
+      font-family:Georgia, "Times New Roman", serif;
+      color:#fff0d4;
+    }
+
+    .view-title p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .view-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .button{
+      border:none;
+      border-radius:12px;
+      min-height:38px;
+      padding:0 14px;
+      cursor:pointer;
+      font-weight:700;
+      transition:.16s ease;
+    }
+
+    .button:hover{
+      transform:translateY(-1px);
+    }
+
+    .button-ghost{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.09);
+    }
+
+    .button-ghost:hover{
+      background:rgba(255,255,255,.07);
+    }
+
+    .button-gold{
+      background:linear-gradient(180deg, rgba(224,191,127,.18), rgba(138,92,46,.16));
+      border:1px solid rgba(200,169,107,.22);
+      color:#f7e9cf;
+    }
+
     .tabs{
       display:grid;
       grid-template-columns:repeat(4, minmax(0,1fr));
@@ -423,7 +518,7 @@
 
     .mail-row{
       display:grid;
-      grid-template-columns:42px 28px 210px 1fr 88px;
+      grid-template-columns:42px 28px 220px 1fr 96px;
       align-items:center;
       gap:10px;
       min-height:58px;
@@ -475,17 +570,52 @@
       color:#b79f82;
       font-size:13px;
       font-weight:700;
+      white-space:nowrap;
     }
 
     .star{
       color:#8f7a5d;
       font-size:18px;
       user-select:none;
+      cursor:pointer;
+      width:24px;
+      text-align:center;
     }
 
     .star.active{
       color:var(--gold-bright);
       text-shadow:0 0 12px rgba(224,191,127,.18);
+    }
+
+    .panel-state{
+      padding:24px 22px;
+      border-top:1px solid rgba(255,255,255,.04);
+      color:var(--muted);
+    }
+
+    .panel-state strong{
+      display:block;
+      margin-bottom:8px;
+      color:#fff2dc;
+      font-size:15px;
+    }
+
+    .empty-state,
+    .error-state{
+      margin:18px;
+      padding:22px;
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,.12);
+      background:rgba(255,255,255,.025);
+      color:var(--muted);
+    }
+
+    .empty-state strong,
+    .error-state strong{
+      display:block;
+      margin-bottom:8px;
+      color:#fff2dc;
+      font-size:15px;
     }
 
     /* Compose window */
@@ -632,6 +762,7 @@
       display:flex;
       align-items:center;
       gap:8px;
+      flex-wrap:wrap;
     }
 
     .send-btn{
@@ -663,7 +794,6 @@
       background:rgba(60,35,12,.08);
     }
 
-    /* Overlay for mobile sidebar */
     .overlay{
       position:fixed;
       inset:0;
@@ -679,7 +809,6 @@
       pointer-events:auto;
     }
 
-    /* Responsive */
     @media (max-width: 1100px){
       .mail-row{
         grid-template-columns:42px 28px 170px 1fr 74px;
@@ -777,6 +906,11 @@
       .toolbar-meta{
         display:none;
       }
+
+      .view-header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
     }
   </style>
 </head>
@@ -803,23 +937,22 @@
           <circle cx="11" cy="11" r="7"></circle>
           <path d="M20 20l-3.5-3.5"></path>
         </svg>
-        <input type="text" placeholder="Search forged correspondence" />
-        <button class="icon-btn" aria-label="Filter mail">
+        <input id="searchInput" type="text" placeholder="Search forged correspondence" />
+        <button class="icon-btn" id="clearSearch" aria-label="Clear search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 6h16M7 12h10M10 18h4"/>
+            <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
         </button>
       </div>
 
       <div class="toolbar-right">
-        <button class="icon-btn" aria-label="Support">
+        <button class="icon-btn" id="accountShortcut" aria-label="Account">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4"/>
-            <path d="M12 17h.01"/>
+            <path d="M20 21a8 8 0 1 0-16 0"/>
+            <circle cx="12" cy="7" r="4"/>
           </svg>
         </button>
-        <button class="icon-btn" aria-label="Settings">
+        <button class="icon-btn" id="settingsShortcut" aria-label="Settings">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82L4.3 6.46a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6c.39-.16.68-.5.79-.91V3a2 2 0 1 1 4 0v.09c.11.41.4.75.79.91a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.39.5.68.91.79H21a2 2 0 1 1 0 4h-.09c-.41.11-.75.4-.91.79z"/>
@@ -839,8 +972,8 @@
           Compose
         </button>
 
-        <div class="nav-group">
-          <button class="nav-item active">
+        <div class="nav-group" id="systemNav">
+          <button class="nav-item active" data-view="inbox">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 12H2"/>
@@ -849,29 +982,31 @@
               </svg>
               Inbox
             </span>
-            <span class="count">187</span>
+            <span class="count" id="count-inbox">—</span>
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" data-view="starred">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
               </svg>
               Starred
             </span>
+            <span class="count" id="count-starred">—</span>
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" data-view="sent">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16v16H4z"/>
-                <path d="M22 6l-10 7L2 6"/>
+                <path d="M22 2L11 13"/>
+                <path d="M22 2L15 22l-4-9-9-4z"/>
               </svg>
               Sent
             </span>
+            <span class="count" id="count-sent">—</span>
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" data-view="drafts">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -880,10 +1015,10 @@
               </svg>
               Drafts
             </span>
-            <span class="count">2</span>
+            <span class="count" id="count-drafts">—</span>
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" data-view="all">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 6h18"/>
@@ -892,9 +1027,10 @@
               </svg>
               All Mail
             </span>
+            <span class="count" id="count-all">—</span>
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" data-view="spam">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -903,10 +1039,10 @@
               </svg>
               Spam
             </span>
-            <span class="count">3</span>
+            <span class="count" id="count-spam">—</span>
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" data-view="trash">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 6h18"/>
@@ -915,23 +1051,50 @@
               </svg>
               Trash
             </span>
+            <span class="count" id="count-trash">—</span>
           </button>
         </div>
 
         <div class="sidebar-label">Labels</div>
 
-        <div class="nav-group">
-          <button class="nav-item">
+        <div class="nav-group" id="labelNav">
+          <button class="nav-item" data-view="clients">
             <span class="nav-item-left">✦ Clients</span>
+            <span class="count" id="count-clients">—</span>
           </button>
-          <button class="nav-item">
+
+          <button class="nav-item" data-view="orders">
             <span class="nav-item-left">✦ Orders</span>
+            <span class="count" id="count-orders">—</span>
           </button>
-          <button class="nav-item">
-            <span class="nav-item-left">✦ Campaigns</span>
+
+          <button class="nav-item" data-view="updates">
+            <span class="nav-item-left">✦ Updates</span>
+            <span class="count" id="count-updates">—</span>
           </button>
-          <button class="nav-item">
-            <span class="nav-item-left">✦ Forge Notes</span>
+        </div>
+
+        <div class="sidebar-separator"></div>
+
+        <div class="nav-group" id="adminNav">
+          <button class="nav-item" data-view="settings">
+            <span class="nav-item-left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82L4.3 6.46a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6c.39-.16.68-.5.79-.91V3a2 2 0 1 1 4 0v.09c.11.41.4.75.79.91a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.39.5.68.91.79H21a2 2 0 1 1 0 4h-.09c-.41.11-.75.4-.91.79z"/>
+              </svg>
+              Settings
+            </span>
+          </button>
+
+          <button class="nav-item" data-view="account">
+            <span class="nav-item-left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21a8 8 0 1 0-16 0"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              Account
+            </span>
           </button>
         </div>
       </aside>
@@ -940,8 +1103,8 @@
         <section class="mail-frame">
           <div class="toolbar">
             <div class="toolbar-left">
-              <input class="checkbox" type="checkbox" aria-label="Select all" />
-              <button class="icon-btn" aria-label="Refresh">
+              <input class="checkbox" type="checkbox" id="selectAll" aria-label="Select all" />
+              <button class="icon-btn" id="refreshButton" aria-label="Refresh">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 2v6h-6"/>
                   <path d="M3 12a9 9 0 0 1 15.55-6.36L21 8"/>
@@ -949,7 +1112,7 @@
                   <path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"/>
                 </svg>
               </button>
-              <button class="icon-btn" aria-label="More">
+              <button class="icon-btn" id="moreButton" aria-label="More actions">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="5" r="2"></circle>
                   <circle cx="12" cy="12" r="2"></circle>
@@ -959,13 +1122,13 @@
             </div>
 
             <div class="toolbar-meta">
-              <span>1–50 of 228</span>
-              <button class="icon-btn" aria-label="Previous">
+              <span id="rangeText">0–0 of 0</span>
+              <button class="icon-btn" id="prevPage" aria-label="Previous">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M15 18l-6-6 6-6"/>
                 </svg>
               </button>
-              <button class="icon-btn" aria-label="Next">
+              <button class="icon-btn" id="nextPage" aria-label="Next">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M9 18l6-6-6-6"/>
                 </svg>
@@ -973,117 +1136,54 @@
             </div>
           </div>
 
-          <div class="tabs">
-            <button class="tab active">
-              <span class="tab-title">Primary</span>
+          <div class="view-header">
+            <div class="view-title">
+              <h1 id="viewHeading">Inbox</h1>
+              <p id="viewDescription">Incoming system and business correspondence.</p>
+            </div>
+
+            <div class="view-actions">
+              <button class="button button-ghost" id="openSettingsButton">Settings</button>
+              <button class="button button-ghost" id="openAccountButton">Account</button>
+              <button class="button button-gold" id="composeButtonHeader">Compose</button>
+            </div>
+          </div>
+
+          <div class="tabs" id="topTabs">
+            <button class="tab active" data-view="inbox">
+              <span class="tab-title">Primary <span class="badge" id="tab-badge-inbox">0</span></span>
             </button>
-            <button class="tab">
-              <span class="tab-title">Clients <span class="badge">12</span></span>
+            <button class="tab" data-view="clients">
+              <span class="tab-title">Clients <span class="badge" id="tab-badge-clients">0</span></span>
             </button>
-            <button class="tab">
-              <span class="tab-title">Orders <span class="badge">4</span></span>
+            <button class="tab" data-view="orders">
+              <span class="tab-title">Orders <span class="badge" id="tab-badge-orders">0</span></span>
             </button>
-            <button class="tab">
-              <span class="tab-title">Updates <span class="badge">8</span></span>
+            <button class="tab" data-view="updates">
+              <span class="tab-title">Updates <span class="badge" id="tab-badge-updates">0</span></span>
             </button>
           </div>
 
-          <div class="mail-list">
-            <div class="mail-row unread">
-              <input class="checkbox" type="checkbox" />
-              <div class="star active">★</div>
-              <div class="sender">Cloudflare</div>
-              <div class="preview"><span class="subject">Zero Trust deployment update</span> — your DNS filtering history and deployment options are now available.</div>
-              <div class="time">Mar 17</div>
-            </div>
+          <div class="mail-list" id="mailList" aria-live="polite"></div>
 
-            <div class="mail-row unread">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Neo</div>
-              <div class="preview"><span class="subject">Mailbox rating request</span> — how would you rate the support you received for Astral Forge mail?</div>
-              <div class="time">Mar 17</div>
-            </div>
+          <div class="empty-state hidden" id="emptyState">
+            <strong>No messages found.</strong>
+            This view will populate when matching mail exists in your system.
+          </div>
 
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">StartPlaying</div>
-              <div class="preview"><span class="subject">A player updated their review</span> — your Game Master profile will reflect the new review shortly.</div>
-              <div class="time">Mar 14</div>
-            </div>
+          <div class="error-state hidden" id="errorState">
+            <strong>Mail feed unavailable.</strong>
+            The page loaded, but Astral Forge Mail could not read the current view.
+          </div>
 
-            <div class="mail-row unread">
-              <input class="checkbox" type="checkbox" />
-              <div class="star active">★</div>
-              <div class="sender">GitHub</div>
-              <div class="preview"><span class="subject">Email address added to your account</span> — scribe@astralforge.studio has been linked successfully.</div>
-              <div class="time">Mar 14</div>
-            </div>
+          <div class="panel-state hidden" id="settingsPanel">
+            <strong>Mail Settings</strong>
+            Configure sender identities, reply-to addresses, routing rules, queue behavior, and provider integration here.
+          </div>
 
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Mythic Realms</div>
-              <div class="preview"><span class="subject">Token Library Update</span> — March releases are now available in your vault.</div>
-              <div class="time">Mar 16</div>
-            </div>
-
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Stripe</div>
-              <div class="preview"><span class="subject">Payout initiated</span> — your latest transfer from campaign bookings is now in progress.</div>
-              <div class="time">Mar 13</div>
-            </div>
-
-            <div class="mail-row unread">
-              <input class="checkbox" type="checkbox" />
-              <div class="star active">★</div>
-              <div class="sender">Astral Forge Shop</div>
-              <div class="preview"><span class="subject">New order placed</span> — a customer just purchased a custom mini commission.</div>
-              <div class="time">Mar 12</div>
-            </div>
-
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Foundry VTT</div>
-              <div class="preview"><span class="subject">System update available</span> — new improvements are ready for your world and modules.</div>
-              <div class="time">Mar 11</div>
-            </div>
-
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Patreon</div>
-              <div class="preview"><span class="subject">Membership summary</span> — your current supporters and billing totals are ready to review.</div>
-              <div class="time">Mar 10</div>
-            </div>
-
-            <div class="mail-row unread">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Campaign Client</div>
-              <div class="preview"><span class="subject">Session inquiry</span> — asking about availability for a long-term homebrew campaign.</div>
-              <div class="time">Mar 9</div>
-            </div>
-
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star">☆</div>
-              <div class="sender">Cloudflare</div>
-              <div class="preview"><span class="subject">Password changed</span> — your account credentials were updated successfully.</div>
-              <div class="time">Mar 8</div>
-            </div>
-
-            <div class="mail-row">
-              <input class="checkbox" type="checkbox" />
-              <div class="star active">★</div>
-              <div class="sender">Discord</div>
-              <div class="preview"><span class="subject">Community digest</span> — new activity in your campaign server this week.</div>
-              <div class="time">Mar 8</div>
-            </div>
+          <div class="panel-state hidden" id="accountPanel">
+            <strong>Mail Account</strong>
+            Manage the mailbox identities tied to Astral Forge, including your own mailbox and business addresses such as support@astralforge.studio.
           </div>
         </section>
       </main>
@@ -1122,7 +1222,7 @@
 
       <div class="compose-footer">
         <div class="footer-left">
-          <button class="send-btn">Send</button>
+          <button class="send-btn" id="sendMessageButton">Send</button>
           <button class="tool-btn" aria-label="Attach file">📎</button>
           <button class="tool-btn" aria-label="Insert link">🔗</button>
           <button class="tool-btn" aria-label="Formatting">T</button>
@@ -1137,66 +1237,609 @@
   </section>
 
   <script>
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const menuToggle = document.getElementById('menuToggle');
+    (function(){
+      "use strict";
 
-    const composeBtn = document.getElementById('composeBtn');
-    const composeWindow = document.getElementById('composeWindow');
-    const closeCompose = document.getElementById('closeCompose');
+      /*
+        ASTRAL FORGE MAIL
+        -----------------
+        This UI uses real endpoints only. No hardcoded mail rows.
 
-    function openSidebar(){
-      sidebar.classList.add('open');
-      overlay.classList.add('show');
-    }
+        Expected endpoints:
 
-    function closeSidebar(){
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-    }
+        GET  /api/mail/views/inbox
+        GET  /api/mail/views/starred
+        GET  /api/mail/views/sent
+        GET  /api/mail/views/drafts
+        GET  /api/mail/views/all
+        GET  /api/mail/views/spam
+        GET  /api/mail/views/trash
+        GET  /api/mail/views/clients
+        GET  /api/mail/views/orders
+        GET  /api/mail/views/updates
 
-    function toggleSidebar(){
-      if(window.innerWidth > 900) return;
-      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
-    }
+        Optional response shape:
+        {
+          "messages": [
+            {
+              "id": "msg_001",
+              "from": "Cloudflare",
+              "subject": "Zero Trust deployment update",
+              "preview": "your DNS filtering history and deployment options are now available.",
+              "timestamp": "2026-03-17T14:32:00Z",
+              "read": false,
+              "starred": true,
+              "labels": ["updates"],
+              "folder": "inbox"
+            }
+          ],
+          "counts": {
+            "inbox": 12,
+            "starred": 2,
+            "sent": 9,
+            "drafts": 1,
+            "all": 40,
+            "spam": 0,
+            "trash": 0,
+            "clients": 3,
+            "orders": 4,
+            "updates": 5
+          }
+        }
 
-    function openCompose(){
-      composeWindow.classList.add('open');
-    }
+        Optional POST endpoints:
+        POST /api/mail/star/:id
+        POST /api/mail/unstar/:id
+        POST /api/mail/read/:id
+        POST /api/mail/send
+      */
 
-    function closeComposeWindow(){
-      composeWindow.classList.remove('open');
-    }
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      const menuToggle = document.getElementById("menuToggle");
 
-    menuToggle.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', () => {
-      closeSidebar();
-    });
+      const composeBtn = document.getElementById("composeBtn");
+      const composeButtonHeader = document.getElementById("composeButtonHeader");
+      const composeWindow = document.getElementById("composeWindow");
+      const closeCompose = document.getElementById("closeCompose");
 
-    composeBtn.addEventListener('click', openCompose);
-    closeCompose.addEventListener('click', closeComposeWindow);
+      const mailList = document.getElementById("mailList");
+      const emptyState = document.getElementById("emptyState");
+      const errorState = document.getElementById("errorState");
+      const settingsPanel = document.getElementById("settingsPanel");
+      const accountPanel = document.getElementById("accountPanel");
 
-    window.addEventListener('resize', () => {
-      if(window.innerWidth > 900){
-        closeSidebar();
+      const searchInput = document.getElementById("searchInput");
+      const clearSearch = document.getElementById("clearSearch");
+
+      const rangeText = document.getElementById("rangeText");
+      const prevPage = document.getElementById("prevPage");
+      const nextPage = document.getElementById("nextPage");
+      const refreshButton = document.getElementById("refreshButton");
+
+      const viewHeading = document.getElementById("viewHeading");
+      const viewDescription = document.getElementById("viewDescription");
+
+      const openSettingsButton = document.getElementById("openSettingsButton");
+      const openAccountButton = document.getElementById("openAccountButton");
+      const settingsShortcut = document.getElementById("settingsShortcut");
+      const accountShortcut = document.getElementById("accountShortcut");
+
+      const systemNav = document.getElementById("systemNav");
+      const labelNav = document.getElementById("labelNav");
+      const adminNav = document.getElementById("adminNav");
+      const topTabs = document.getElementById("topTabs");
+
+      const countIds = [
+        "inbox","starred","sent","drafts","all","spam","trash",
+        "clients","orders","updates"
+      ];
+
+      const viewMeta = {
+        inbox: {
+          title: "Inbox",
+          description: "Incoming system and business correspondence.",
+          endpoint: "/api/mail/views/inbox",
+          panel: "mail"
+        },
+        starred: {
+          title: "Starred",
+          description: "Flagged messages that matter most.",
+          endpoint: "/api/mail/views/starred",
+          panel: "mail"
+        },
+        sent: {
+          title: "Sent",
+          description: "Messages already sent from Astral Forge identities.",
+          endpoint: "/api/mail/views/sent",
+          panel: "mail"
+        },
+        drafts: {
+          title: "Drafts",
+          description: "Messages saved but not yet sent.",
+          endpoint: "/api/mail/views/drafts",
+          panel: "mail"
+        },
+        all: {
+          title: "All Mail",
+          description: "Every stored message across active folders.",
+          endpoint: "/api/mail/views/all",
+          panel: "mail"
+        },
+        spam: {
+          title: "Spam",
+          description: "Messages marked as suspicious or unwanted.",
+          endpoint: "/api/mail/views/spam",
+          panel: "mail"
+        },
+        trash: {
+          title: "Trash",
+          description: "Messages removed from active mail views.",
+          endpoint: "/api/mail/views/trash",
+          panel: "mail"
+        },
+        clients: {
+          title: "Clients",
+          description: "Correspondence tied to players, customers, and direct client contact.",
+          endpoint: "/api/mail/views/clients",
+          panel: "mail"
+        },
+        orders: {
+          title: "Orders",
+          description: "Mail tied to orders, receipts, fulfillment, and store activity.",
+          endpoint: "/api/mail/views/orders",
+          panel: "mail"
+        },
+        updates: {
+          title: "Updates",
+          description: "Platform, system, billing, and service notifications.",
+          endpoint: "/api/mail/views/updates",
+          panel: "mail"
+        },
+        settings: {
+          title: "Settings",
+          description: "Mail configuration and routing controls.",
+          endpoint: null,
+          panel: "settings"
+        },
+        account: {
+          title: "Account",
+          description: "Mailbox identities connected to Astral Forge.",
+          endpoint: null,
+          panel: "account"
+        }
+      };
+
+      const state = {
+        currentView: "inbox",
+        messages: [],
+        filteredMessages: [],
+        counts: {},
+        page: 1,
+        perPage: 50,
+        query: ""
+      };
+
+      function escapeHtml(value){
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
-    });
 
-    document.querySelectorAll('.star').forEach(star => {
-      star.addEventListener('click', (e) => {
-        e.stopPropagation();
-        star.classList.toggle('active');
-        star.textContent = star.classList.contains('active') ? '★' : '☆';
-      });
-    });
+      function formatDate(ts){
+        if(!ts) return "";
+        const d = new Date(ts);
+        if(Number.isNaN(d.getTime())) return "";
+        return d.toLocaleDateString("en-US", {
+          month:"short",
+          day:"numeric"
+        });
+      }
 
-    document.querySelectorAll('.mail-row').forEach(row => {
-      row.addEventListener('click', () => {
-        document.querySelectorAll('.mail-row').forEach(r => r.style.outline = 'none');
-        row.style.outline = '1px solid rgba(200,169,107,.28)';
-        row.style.outlineOffset = '-1px';
+      function normalizeMessage(message){
+        if(!message || typeof message !== "object") return null;
+        if(!message.id) return null;
+
+        return {
+          id: String(message.id),
+          from: String(message.from || ""),
+          subject: String(message.subject || ""),
+          preview: String(message.preview || ""),
+          timestamp: message.timestamp || "",
+          read: Boolean(message.read),
+          starred: Boolean(message.starred),
+          labels: Array.isArray(message.labels) ? message.labels.map(x => String(x)) : [],
+          folder: String(message.folder || "")
+        };
+      }
+
+      function openSidebar(){
+        sidebar.classList.add("open");
+        overlay.classList.add("show");
+      }
+
+      function closeSidebar(){
+        sidebar.classList.remove("open");
+        overlay.classList.remove("show");
+      }
+
+      function toggleSidebar(){
+        if(window.innerWidth > 900) return;
+        sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+      }
+
+      function openCompose(){
+        composeWindow.classList.add("open");
+      }
+
+      function closeComposeWindow(){
+        composeWindow.classList.remove("open");
+      }
+
+      function setActiveNav(view){
+        document.querySelectorAll(".nav-item").forEach(item => {
+          item.classList.toggle("active", item.dataset.view === view);
+        });
+
+        document.querySelectorAll(".tab").forEach(tab => {
+          tab.classList.toggle("active", tab.dataset.view === view);
+        });
+      }
+
+      function showPanel(type){
+        mailList.classList.add("hidden");
+        emptyState.classList.add("hidden");
+        errorState.classList.add("hidden");
+        settingsPanel.classList.add("hidden");
+        accountPanel.classList.add("hidden");
+
+        if(type === "mail"){
+          mailList.classList.remove("hidden");
+        } else if(type === "settings"){
+          settingsPanel.classList.remove("hidden");
+        } else if(type === "account"){
+          accountPanel.classList.remove("hidden");
+        }
+      }
+
+      function updateHeader(){
+        const meta = viewMeta[state.currentView] || viewMeta.inbox;
+        viewHeading.textContent = meta.title;
+        viewDescription.textContent = meta.description;
+        showPanel(meta.panel);
+      }
+
+      function updateCounts(counts){
+        state.counts = counts || {};
+
+        countIds.forEach(key => {
+          const value = state.counts[key];
+          const target = document.getElementById(`count-${key}`);
+          if(target){
+            target.textContent = Number.isFinite(value) ? String(value) : "—";
+          }
+        });
+
+        const tabInbox = document.getElementById("tab-badge-inbox");
+        const tabClients = document.getElementById("tab-badge-clients");
+        const tabOrders = document.getElementById("tab-badge-orders");
+        const tabUpdates = document.getElementById("tab-badge-updates");
+
+        if(tabInbox) tabInbox.textContent = Number.isFinite(state.counts.inbox) ? String(state.counts.inbox) : "0";
+        if(tabClients) tabClients.textContent = Number.isFinite(state.counts.clients) ? String(state.counts.clients) : "0";
+        if(tabOrders) tabOrders.textContent = Number.isFinite(state.counts.orders) ? String(state.counts.orders) : "0";
+        if(tabUpdates) tabUpdates.textContent = Number.isFinite(state.counts.updates) ? String(state.counts.updates) : "0";
+      }
+
+      function renderMessageRow(msg){
+        const unreadClass = msg.read ? "" : " unread";
+        const starChar = msg.starred ? "★" : "☆";
+        const starClass = msg.starred ? "star active" : "star";
+
+        return `
+          <div class="mail-row${unreadClass}" data-id="${escapeHtml(msg.id)}">
+            <input class="checkbox row-check" type="checkbox" aria-label="Select message" />
+            <div class="${starClass}" data-action="star">${starChar}</div>
+            <div class="sender">${escapeHtml(msg.from)}</div>
+            <div class="preview">
+              <span class="subject">${escapeHtml(msg.subject)}</span>
+              ${msg.preview ? ` — ${escapeHtml(msg.preview)}` : ""}
+            </div>
+            <div class="time">${escapeHtml(formatDate(msg.timestamp))}</div>
+          </div>
+        `;
+      }
+
+      function applySearch(){
+        const query = state.query.trim().toLowerCase();
+
+        if(!query){
+          state.filteredMessages = [...state.messages];
+        } else {
+          state.filteredMessages = state.messages.filter(msg => {
+            const haystack = [
+              msg.from,
+              msg.subject,
+              msg.preview,
+              ...(msg.labels || []),
+              msg.folder
+            ].join(" ").toLowerCase();
+
+            return haystack.includes(query);
+          });
+        }
+
+        state.page = 1;
+        renderCurrentPage();
+      }
+
+      function renderCurrentPage(){
+        const total = state.filteredMessages.length;
+        const start = (state.page - 1) * state.perPage;
+        const end = Math.min(start + state.perPage, total);
+        const pageItems = state.filteredMessages.slice(start, end);
+
+        mailList.innerHTML = "";
+        emptyState.classList.add("hidden");
+
+        if(!total){
+          rangeText.textContent = "0–0 of 0";
+          emptyState.classList.remove("hidden");
+          prevPage.disabled = true;
+          nextPage.disabled = true;
+          return;
+        }
+
+        mailList.innerHTML = pageItems.map(renderMessageRow).join("");
+        rangeText.textContent = `${start + 1}–${end} of ${total}`;
+
+        const totalPages = Math.ceil(total / state.perPage);
+        prevPage.disabled = state.page <= 1;
+        nextPage.disabled = state.page >= totalPages;
+
+        bindRowInteractions();
+      }
+
+      function bindRowInteractions(){
+        document.querySelectorAll(".star[data-action='star']").forEach(star => {
+          star.addEventListener("click", async (event) => {
+            event.stopPropagation();
+
+            const row = star.closest(".mail-row");
+            const id = row?.dataset?.id;
+            if(!id) return;
+
+            const isActive = star.classList.contains("active");
+            star.classList.toggle("active", !isActive);
+            star.textContent = !isActive ? "★" : "☆";
+
+            const msg = state.messages.find(item => item.id === id);
+            if(msg){
+              msg.starred = !isActive;
+            }
+
+            try{
+              await fetch(`/api/mail/${!isActive ? "star" : "unstar"}/${encodeURIComponent(id)}`, {
+                method: "POST"
+              });
+            } catch (err){
+              console.error("Star toggle failed:", err);
+            }
+          });
+        });
+
+        document.querySelectorAll(".mail-row").forEach(row => {
+          row.addEventListener("click", async (event) => {
+            const target = event.target;
+            if(target && (target.classList.contains("row-check") || target.dataset.action === "star")){
+              return;
+            }
+
+            const id = row.dataset.id;
+            if(!id) return;
+
+            row.classList.remove("unread");
+
+            const msg = state.messages.find(item => item.id === id);
+            if(msg){
+              msg.read = true;
+            }
+
+            try{
+              await fetch(`/api/mail/read/${encodeURIComponent(id)}`, {
+                method: "POST"
+              });
+            } catch (err){
+              console.error("Mark read failed:", err);
+            }
+
+            window.location.href = `/message/?id=${encodeURIComponent(id)}`;
+          });
+        });
+      }
+
+      async function loadView(view){
+        const meta = viewMeta[view];
+        if(!meta) return;
+
+        state.currentView = view;
+        setActiveNav(view);
+        updateHeader();
+
+        if(meta.panel !== "mail"){
+          state.messages = [];
+          state.filteredMessages = [];
+          rangeText.textContent = "0–0 of 0";
+          mailList.innerHTML = "";
+          emptyState.classList.add("hidden");
+          errorState.classList.add("hidden");
+          prevPage.disabled = true;
+          nextPage.disabled = true;
+          return;
+        }
+
+        mailList.innerHTML = "";
+        emptyState.classList.add("hidden");
+        errorState.classList.add("hidden");
+        rangeText.textContent = "Loading…";
+
+        try{
+          const response = await fetch(meta.endpoint, {
+            method: "GET",
+            headers: { "Accept": "application/json" },
+            cache: "no-store"
+          });
+
+          if(!response.ok){
+            if(response.status === 404){
+              state.messages = [];
+              state.filteredMessages = [];
+              renderCurrentPage();
+              return;
+            }
+
+            throw new Error(`Failed loading ${view}: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const messages = Array.isArray(data?.messages)
+            ? data.messages.map(normalizeMessage).filter(Boolean)
+            : [];
+
+          messages.sort((a, b) => {
+            const aTime = new Date(a.timestamp || 0).getTime() || 0;
+            const bTime = new Date(b.timestamp || 0).getTime() || 0;
+            return bTime - aTime;
+          });
+
+          state.messages = messages;
+          updateCounts(data?.counts || {});
+          applySearch();
+        } catch (error){
+          console.error(error);
+          state.messages = [];
+          state.filteredMessages = [];
+          mailList.innerHTML = "";
+          rangeText.textContent = "0–0 of 0";
+          errorState.classList.remove("hidden");
+          prevPage.disabled = true;
+          nextPage.disabled = true;
+        }
+      }
+
+      async function refreshCurrentView(){
+        await loadView(state.currentView);
+      }
+
+      async function sendMessage(){
+        const toField = document.getElementById("toField");
+        const subjectField = document.getElementById("subjectField");
+        const editor = document.getElementById("editor");
+
+        const payload = {
+          to: toField.value.trim(),
+          subject: subjectField.value.trim(),
+          body: editor.innerHTML.trim()
+        };
+
+        if(!payload.to){
+          toField.focus();
+          return;
+        }
+
+        try{
+          const response = await fetch("/api/mail/send", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if(!response.ok){
+            throw new Error(`Send failed with status ${response.status}`);
+          }
+
+          toField.value = "";
+          subjectField.value = "";
+          editor.innerHTML = "";
+          closeComposeWindow();
+          await loadView("sent");
+        } catch (error){
+          console.error("Send failed:", error);
+        }
+      }
+
+      function bindViewButtons(container){
+        container.addEventListener("click", (event) => {
+          const button = event.target.closest("[data-view]");
+          if(!button) return;
+
+          const view = button.dataset.view;
+          if(!view) return;
+
+          closeSidebar();
+          loadView(view);
+        });
+      }
+
+      menuToggle.addEventListener("click", toggleSidebar);
+      overlay.addEventListener("click", closeSidebar);
+
+      composeBtn.addEventListener("click", openCompose);
+      composeButtonHeader.addEventListener("click", openCompose);
+      closeCompose.addEventListener("click", closeComposeWindow);
+
+      refreshButton.addEventListener("click", refreshCurrentView);
+
+      clearSearch.addEventListener("click", () => {
+        searchInput.value = "";
+        state.query = "";
+        applySearch();
       });
-    });
+
+      searchInput.addEventListener("input", () => {
+        state.query = searchInput.value || "";
+        applySearch();
+      });
+
+      prevPage.addEventListener("click", () => {
+        if(state.page <= 1) return;
+        state.page -= 1;
+        renderCurrentPage();
+      });
+
+      nextPage.addEventListener("click", () => {
+        const totalPages = Math.ceil(state.filteredMessages.length / state.perPage);
+        if(state.page >= totalPages) return;
+        state.page += 1;
+        renderCurrentPage();
+      });
+
+      bindViewButtons(systemNav);
+      bindViewButtons(labelNav);
+      bindViewButtons(adminNav);
+      bindViewButtons(topTabs);
+
+      openSettingsButton.addEventListener("click", () => loadView("settings"));
+      openAccountButton.addEventListener("click", () => loadView("account"));
+      settingsShortcut.addEventListener("click", () => loadView("settings"));
+      accountShortcut.addEventListener("click", () => loadView("account"));
+
+      document.getElementById("sendMessageButton").addEventListener("click", sendMessage);
+
+      window.addEventListener("resize", () => {
+        if(window.innerWidth > 900){
+          closeSidebar();
+        }
+      });
+
+      loadView("inbox");
+    })();
   </script>
 </body>
 </html>
