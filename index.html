@@ -6,9 +6,8 @@
   <title>Astral Forge Mail</title>
   <meta
     name="description"
-    content="Astral Forge Mail — internal communications console for inbox, sent mail, drafts, labels, and system mail management."
+    content="Astral Forge Mail — internal communications console for inbox, sent mail, drafts, labels, account identities, and settings."
   />
-
   <style>
     :root{
       --bg:#0a0907;
@@ -32,7 +31,8 @@
       --radius:18px;
       --radius-sm:12px;
       --topbar-h:72px;
-      --sidebar-w:264px;
+      --sidebar-w:248px;
+      --overlay-shadow:0 30px 70px rgba(0,0,0,.55);
     }
 
     *{
@@ -54,16 +54,16 @@
       overflow:hidden;
     }
 
-    a{
-      color:inherit;
-      text-decoration:none;
-    }
-
     button,
     input,
     select,
     textarea{
       font:inherit;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
     }
 
     .hidden{
@@ -108,6 +108,7 @@
       display:grid;
       place-items:center;
       transition:.18s ease;
+      flex:none;
     }
 
     .menu-btn:hover,
@@ -188,6 +189,7 @@
       display:flex;
       align-items:center;
       gap:6px;
+      position:relative;
     }
 
     .avatar{
@@ -202,16 +204,17 @@
       place-items:center;
       margin-left:6px;
       box-shadow:0 6px 14px rgba(0,0,0,.28);
+      cursor:pointer;
+      user-select:none;
     }
 
-    /* Main Shell */
+    /* Main shell */
     .shell{
       display:grid;
       grid-template-columns:var(--sidebar-w) 1fr;
       min-height:0;
     }
 
-    /* Sidebar */
     .sidebar{
       border-right:1px solid rgba(200,169,107,.11);
       background:linear-gradient(180deg, rgba(19,16,13,.94), rgba(12,10,8,.96));
@@ -304,12 +307,6 @@
       letter-spacing:.12em;
     }
 
-    .sidebar-separator{
-      height:1px;
-      margin:16px 10px;
-      background:linear-gradient(90deg, transparent, rgba(200,169,107,.12), transparent);
-    }
-
     /* Content */
     .content{
       padding:14px 14px 18px;
@@ -320,13 +317,14 @@
 
     .mail-frame{
       display:grid;
-      grid-template-rows:auto auto auto 1fr;
+      grid-template-rows:auto auto 1fr;
       height:100%;
       border:1px solid rgba(200,169,107,.12);
       border-radius:24px;
       background:linear-gradient(180deg, rgba(22,18,14,.98), rgba(14,11,8,.98));
       box-shadow:var(--shadow);
       overflow:hidden;
+      position:relative;
     }
 
     .toolbar{
@@ -378,73 +376,6 @@
       gap:10px;
       color:var(--muted);
       font-size:13px;
-    }
-
-    .view-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px 18px;
-      border-bottom:1px solid var(--border-soft);
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
-    }
-
-    .view-title{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-
-    .view-title h1{
-      margin:0;
-      font-size:20px;
-      font-family:Georgia, "Times New Roman", serif;
-      color:#fff0d4;
-    }
-
-    .view-title p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .view-actions{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .button{
-      border:none;
-      border-radius:12px;
-      min-height:38px;
-      padding:0 14px;
-      cursor:pointer;
-      font-weight:700;
-      transition:.16s ease;
-    }
-
-    .button:hover{
-      transform:translateY(-1px);
-    }
-
-    .button-ghost{
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.09);
-    }
-
-    .button-ghost:hover{
-      background:rgba(255,255,255,.07);
-    }
-
-    .button-gold{
-      background:linear-gradient(180deg, rgba(224,191,127,.18), rgba(138,92,46,.16));
-      border:1px solid rgba(200,169,107,.22);
-      color:#f7e9cf;
     }
 
     .tabs{
@@ -509,7 +440,6 @@
       margin-left:8px;
     }
 
-    /* Mail list */
     .mail-list{
       overflow:auto;
       background:
@@ -518,7 +448,7 @@
 
     .mail-row{
       display:grid;
-      grid-template-columns:42px 28px 220px 1fr 96px;
+      grid-template-columns:42px 28px 210px 1fr 88px;
       align-items:center;
       gap:10px;
       min-height:58px;
@@ -578,8 +508,6 @@
       font-size:18px;
       user-select:none;
       cursor:pointer;
-      width:24px;
-      text-align:center;
     }
 
     .star.active{
@@ -587,26 +515,13 @@
       text-shadow:0 0 12px rgba(224,191,127,.18);
     }
 
-    .panel-state{
-      padding:24px 22px;
-      border-top:1px solid rgba(255,255,255,.04);
-      color:var(--muted);
-    }
-
-    .panel-state strong{
-      display:block;
-      margin-bottom:8px;
-      color:#fff2dc;
-      font-size:15px;
-    }
-
     .empty-state,
     .error-state{
       margin:18px;
       padding:22px;
       border-radius:16px;
-      border:1px dashed rgba(255,255,255,.12);
-      background:rgba(255,255,255,.025);
+      border:1px dashed rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03);
       color:var(--muted);
     }
 
@@ -614,8 +529,24 @@
     .error-state strong{
       display:block;
       margin-bottom:8px;
-      color:#fff2dc;
+      color:#fff;
       font-size:15px;
+    }
+
+    /* Overlay dimmer */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.42);
+      opacity:0;
+      pointer-events:none;
+      transition:.18s ease;
+      z-index:25;
+    }
+
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
     }
 
     /* Compose window */
@@ -629,11 +560,11 @@
       max-height:calc(100vh - 110px);
       border-radius:20px 20px 14px 14px;
       overflow:hidden;
-      box-shadow:0 30px 70px rgba(0,0,0,.55);
+      box-shadow:var(--overlay-shadow);
       border:1px solid rgba(95,64,33,.45);
       display:none;
       flex-direction:column;
-      z-index:50;
+      z-index:60;
       background:#cdb38c;
     }
 
@@ -794,19 +725,218 @@
       background:rgba(60,35,12,.08);
     }
 
-    .overlay{
+    /* Floating account/settings cards */
+    .floating-card{
       position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.42);
-      opacity:0;
-      pointer-events:none;
-      transition:.18s ease;
-      z-index:25;
+      top:84px;
+      right:18px;
+      width:390px;
+      max-width:calc(100vw - 24px);
+      border-radius:26px;
+      border:1px solid rgba(200,169,107,.14);
+      background:linear-gradient(180deg, rgba(27,22,18,.98), rgba(18,15,12,.98));
+      box-shadow:var(--overlay-shadow);
+      z-index:70;
+      overflow:hidden;
+      display:none;
     }
 
-    .overlay.show{
-      opacity:1;
-      pointer-events:auto;
+    .floating-card.open{
+      display:block;
+    }
+
+    .floating-card-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px 18px 12px;
+    }
+
+    .floating-card-title{
+      font-weight:700;
+      color:#fff2dc;
+      font-size:15px;
+    }
+
+    .floating-card-close{
+      width:36px;
+      height:36px;
+      border:none;
+      border-radius:999px;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+    }
+
+    .floating-card-close:hover{
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+    }
+
+    .account-top{
+      padding:8px 18px 18px;
+      text-align:center;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+
+    .account-email{
+      color:#d9c7af;
+      font-size:14px;
+      margin-bottom:14px;
+    }
+
+    .account-avatar{
+      width:72px;
+      height:72px;
+      margin:0 auto 12px;
+      border-radius:999px;
+      border:1px solid rgba(200,169,107,.22);
+      background:linear-gradient(180deg, #bb6c21, #9a3c00);
+      color:#fff6e8;
+      font-weight:800;
+      font-size:38px;
+      display:grid;
+      place-items:center;
+    }
+
+    .account-name{
+      font-size:20px;
+      color:#fff2dc;
+      margin-bottom:14px;
+    }
+
+    .ghost-pill{
+      min-height:42px;
+      border-radius:999px;
+      border:1px solid rgba(200,169,107,.18);
+      background:rgba(255,255,255,.03);
+      color:#f3dec0;
+      font-weight:700;
+      padding:0 18px;
+      cursor:pointer;
+    }
+
+    .ghost-pill:hover{
+      background:rgba(255,255,255,.06);
+    }
+
+    .card-section{
+      padding:14px 14px 16px;
+    }
+
+    .card-stack{
+      display:grid;
+      gap:8px;
+    }
+
+    .card-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      color:#eadbc2;
+      cursor:pointer;
+    }
+
+    .card-row:hover{
+      background:rgba(255,255,255,.05);
+    }
+
+    .card-row-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .mini-avatar{
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color:#fff;
+      flex:none;
+    }
+
+    .mini-avatar.gold{
+      background:linear-gradient(180deg, #bb6c21, #8e3900);
+    }
+
+    .mini-avatar.pink{
+      background:linear-gradient(180deg, #e25386, #c02d62);
+    }
+
+    .mini-avatar.blue{
+      background:linear-gradient(180deg, #2890d8, #1062a8);
+    }
+
+    .identity-meta{
+      min-width:0;
+    }
+
+    .identity-meta strong{
+      display:block;
+      color:#fff3de;
+      font-size:15px;
+      line-height:1.2;
+    }
+
+    .identity-meta span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.3;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .settings-group{
+      padding:0 14px 16px;
+    }
+
+    .settings-panel{
+      padding:6px 14px 16px;
+    }
+
+    .settings-block{
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      margin-bottom:10px;
+    }
+
+    .settings-block strong{
+      display:block;
+      color:#fff2dc;
+      margin-bottom:8px;
+      font-size:15px;
+    }
+
+    .settings-block p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .settings-linkrow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 0 0;
+      color:#f0d5a9;
+      font-size:14px;
+      font-weight:700;
     }
 
     @media (max-width: 1100px){
@@ -841,6 +971,11 @@
 
       .content{
         padding:10px;
+      }
+
+      .floating-card{
+        top:78px;
+        right:12px;
       }
     }
 
@@ -907,9 +1042,11 @@
         display:none;
       }
 
-      .view-header{
-        align-items:flex-start;
-        flex-direction:column;
+      .floating-card{
+        right:8px;
+        left:8px;
+        width:auto;
+        max-width:none;
       }
     }
   </style>
@@ -946,19 +1083,22 @@
       </div>
 
       <div class="toolbar-right">
-        <button class="icon-btn" id="accountShortcut" aria-label="Account">
+        <button class="icon-btn" aria-label="Support">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21a8 8 0 1 0-16 0"/>
-            <circle cx="12" cy="7" r="4"/>
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4"/>
+            <path d="M12 17h.01"/>
           </svg>
         </button>
-        <button class="icon-btn" id="settingsShortcut" aria-label="Settings">
+
+        <button class="icon-btn" id="settingsToggle" aria-label="Settings">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82L4.3 6.46a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6c.39-.16.68-.5.79-.91V3a2 2 0 1 1 4 0v.09c.11.41.4.75.79.91a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.39.5.68.91.79H21a2 2 0 1 1 0 4h-.09c-.41.11-.75.4-.91.79z"/>
           </svg>
         </button>
-        <div class="avatar">S</div>
+
+        <div class="avatar" id="accountToggle" aria-label="Account">S</div>
       </div>
     </header>
 
@@ -972,7 +1112,7 @@
           Compose
         </button>
 
-        <div class="nav-group" id="systemNav">
+        <div class="nav-group" id="folderNav">
           <button class="nav-item active" data-view="inbox">
             <span class="nav-item-left">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1062,39 +1202,13 @@
             <span class="nav-item-left">✦ Clients</span>
             <span class="count" id="count-clients">—</span>
           </button>
-
           <button class="nav-item" data-view="orders">
             <span class="nav-item-left">✦ Orders</span>
             <span class="count" id="count-orders">—</span>
           </button>
-
           <button class="nav-item" data-view="updates">
             <span class="nav-item-left">✦ Updates</span>
             <span class="count" id="count-updates">—</span>
-          </button>
-        </div>
-
-        <div class="sidebar-separator"></div>
-
-        <div class="nav-group" id="adminNav">
-          <button class="nav-item" data-view="settings">
-            <span class="nav-item-left">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82L4.3 6.46a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6c.39-.16.68-.5.79-.91V3a2 2 0 1 1 4 0v.09c.11.41.4.75.79.91a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.39.5.68.91.79H21a2 2 0 1 1 0 4h-.09c-.41.11-.75.4-.91.79z"/>
-              </svg>
-              Settings
-            </span>
-          </button>
-
-          <button class="nav-item" data-view="account">
-            <span class="nav-item-left">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21a8 8 0 1 0-16 0"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-              Account
-            </span>
           </button>
         </div>
       </aside>
@@ -1103,7 +1217,7 @@
         <section class="mail-frame">
           <div class="toolbar">
             <div class="toolbar-left">
-              <input class="checkbox" type="checkbox" id="selectAll" aria-label="Select all" />
+              <input class="checkbox" type="checkbox" aria-label="Select all" id="selectAll" />
               <button class="icon-btn" id="refreshButton" aria-label="Refresh">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 2v6h-6"/>
@@ -1112,7 +1226,7 @@
                   <path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"/>
                 </svg>
               </button>
-              <button class="icon-btn" id="moreButton" aria-label="More actions">
+              <button class="icon-btn" aria-label="More">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="5" r="2"></circle>
                   <circle cx="12" cy="12" r="2"></circle>
@@ -1136,19 +1250,6 @@
             </div>
           </div>
 
-          <div class="view-header">
-            <div class="view-title">
-              <h1 id="viewHeading">Inbox</h1>
-              <p id="viewDescription">Incoming system and business correspondence.</p>
-            </div>
-
-            <div class="view-actions">
-              <button class="button button-ghost" id="openSettingsButton">Settings</button>
-              <button class="button button-ghost" id="openAccountButton">Account</button>
-              <button class="button button-gold" id="composeButtonHeader">Compose</button>
-            </div>
-          </div>
-
           <div class="tabs" id="topTabs">
             <button class="tab active" data-view="inbox">
               <span class="tab-title">Primary <span class="badge" id="tab-badge-inbox">0</span></span>
@@ -1164,26 +1265,16 @@
             </button>
           </div>
 
-          <div class="mail-list" id="mailList" aria-live="polite"></div>
+          <div class="mail-list" id="mailList"></div>
 
           <div class="empty-state hidden" id="emptyState">
             <strong>No messages found.</strong>
-            This view will populate when matching mail exists in your system.
+            This view will populate when messages exist in your live system.
           </div>
 
           <div class="error-state hidden" id="errorState">
             <strong>Mail feed unavailable.</strong>
-            The page loaded, but Astral Forge Mail could not read the current view.
-          </div>
-
-          <div class="panel-state hidden" id="settingsPanel">
-            <strong>Mail Settings</strong>
-            Configure sender identities, reply-to addresses, routing rules, queue behavior, and provider integration here.
-          </div>
-
-          <div class="panel-state hidden" id="accountPanel">
-            <strong>Mail Account</strong>
-            Manage the mailbox identities tied to Astral Forge, including your own mailbox and business addresses such as support@astralforge.studio.
+            Astral Forge Mail could not load this view.
           </div>
         </section>
       </main>
@@ -1192,6 +1283,113 @@
 
   <div class="overlay" id="overlay"></div>
 
+  <!-- Account overlay -->
+  <section class="floating-card" id="accountCard" aria-label="Account menu">
+    <div class="floating-card-header">
+      <div class="floating-card-title">Account</div>
+      <button class="floating-card-close" id="closeAccountCard" aria-label="Close account menu">✕</button>
+    </div>
+
+    <div class="account-top">
+      <div class="account-email" id="accountPrimaryEmail">scribe@astralforge.studio</div>
+      <div class="account-avatar">S</div>
+      <div class="account-name" id="accountPrimaryName">ScaleScribe</div>
+      <button class="ghost-pill" id="manageAccountButton">Manage Mail Account</button>
+    </div>
+
+    <div class="card-section">
+      <div class="card-stack" id="accountIdentityList">
+        <div class="card-row">
+          <div class="card-row-left">
+            <div class="mini-avatar gold">S</div>
+            <div class="identity-meta">
+              <strong>ScaleScribe</strong>
+              <span>scribe@astralforge.studio</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-stack">
+        <div class="card-row" id="addMailboxButton">
+          <div class="card-row-left">
+            <div class="mini-avatar blue">+</div>
+            <div class="identity-meta">
+              <strong>Add mailbox identity</strong>
+              <span>support@astralforge.studio, orders@, hello@, and more</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-row" id="signOutButton">
+          <div class="card-row-left">
+            <div class="identity-meta">
+              <strong>Sign out</strong>
+              <span>End the current Astral Forge Mail session</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Settings overlay -->
+  <section class="floating-card" id="settingsCard" aria-label="Settings menu">
+    <div class="floating-card-header">
+      <div class="floating-card-title">Mail Settings</div>
+      <button class="floating-card-close" id="closeSettingsCard" aria-label="Close settings menu">✕</button>
+    </div>
+
+    <div class="settings-panel">
+      <div class="settings-block">
+        <strong>Sender identities</strong>
+        <p>
+          Configure the default From name, From address, reply-to behavior, and approved sending identities for Astral Forge Mail.
+        </p>
+        <div class="settings-linkrow">
+          <span>Open sender identity settings</span>
+          <span>→</span>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <strong>Routing and labels</strong>
+        <p>
+          Control how incoming messages are categorized into Clients, Orders, Updates, Spam, and other internal mail views.
+        </p>
+        <div class="settings-linkrow">
+          <span>Open routing rules</span>
+          <span>→</span>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <strong>Signatures and compose defaults</strong>
+        <p>
+          Manage signatures, default compose behavior, saved drafts, and future template settings.
+        </p>
+        <div class="settings-linkrow">
+          <span>Open compose settings</span>
+          <span>→</span>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <strong>Provider and delivery status</strong>
+        <p>
+          Review provider status, outbound delivery setup, authenticated domains, and sending health.
+        </p>
+        <div class="settings-linkrow">
+          <span>Open delivery settings</span>
+          <span>→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compose -->
   <section class="compose-window" id="composeWindow" aria-label="Compose email">
     <div class="compose-top">
       <span>New Message</span>
@@ -1222,7 +1420,7 @@
 
       <div class="compose-footer">
         <div class="footer-left">
-          <button class="send-btn" id="sendMessageButton">Send</button>
+          <button class="send-btn" id="sendButton">Send</button>
           <button class="tool-btn" aria-label="Attach file">📎</button>
           <button class="tool-btn" aria-label="Insert link">🔗</button>
           <button class="tool-btn" aria-label="Formatting">T</button>
@@ -1241,24 +1439,29 @@
       "use strict";
 
       /*
-        ASTRAL FORGE MAIL
-        -----------------
-        This UI uses real endpoints only. No hardcoded mail rows.
+        LIVE DATA CONTRACT
 
-        Expected endpoints:
+        Views:
+          GET /api/mail/views/inbox
+          GET /api/mail/views/starred
+          GET /api/mail/views/sent
+          GET /api/mail/views/drafts
+          GET /api/mail/views/all
+          GET /api/mail/views/spam
+          GET /api/mail/views/trash
+          GET /api/mail/views/clients
+          GET /api/mail/views/orders
+          GET /api/mail/views/updates
 
-        GET  /api/mail/views/inbox
-        GET  /api/mail/views/starred
-        GET  /api/mail/views/sent
-        GET  /api/mail/views/drafts
-        GET  /api/mail/views/all
-        GET  /api/mail/views/spam
-        GET  /api/mail/views/trash
-        GET  /api/mail/views/clients
-        GET  /api/mail/views/orders
-        GET  /api/mail/views/updates
+        Optional actions:
+          POST /api/mail/star/:id
+          POST /api/mail/unstar/:id
+          POST /api/mail/read/:id
+          POST /api/mail/send
+          GET  /api/mail/account
+          GET  /api/mail/account/identities
 
-        Optional response shape:
+        Example message response:
         {
           "messages": [
             {
@@ -1286,138 +1489,69 @@
             "updates": 5
           }
         }
-
-        Optional POST endpoints:
-        POST /api/mail/star/:id
-        POST /api/mail/unstar/:id
-        POST /api/mail/read/:id
-        POST /api/mail/send
       */
 
-      const sidebar = document.getElementById("sidebar");
       const overlay = document.getElementById("overlay");
+      const sidebar = document.getElementById("sidebar");
       const menuToggle = document.getElementById("menuToggle");
 
       const composeBtn = document.getElementById("composeBtn");
-      const composeButtonHeader = document.getElementById("composeButtonHeader");
       const composeWindow = document.getElementById("composeWindow");
       const closeCompose = document.getElementById("closeCompose");
+      const sendButton = document.getElementById("sendButton");
 
-      const mailList = document.getElementById("mailList");
-      const emptyState = document.getElementById("emptyState");
-      const errorState = document.getElementById("errorState");
-      const settingsPanel = document.getElementById("settingsPanel");
-      const accountPanel = document.getElementById("accountPanel");
+      const accountToggle = document.getElementById("accountToggle");
+      const settingsToggle = document.getElementById("settingsToggle");
+      const accountCard = document.getElementById("accountCard");
+      const settingsCard = document.getElementById("settingsCard");
+      const closeAccountCard = document.getElementById("closeAccountCard");
+      const closeSettingsCard = document.getElementById("closeSettingsCard");
+
+      const accountPrimaryEmail = document.getElementById("accountPrimaryEmail");
+      const accountPrimaryName = document.getElementById("accountPrimaryName");
+      const accountIdentityList = document.getElementById("accountIdentityList");
+
+      const folderNav = document.getElementById("folderNav");
+      const labelNav = document.getElementById("labelNav");
+      const topTabs = document.getElementById("topTabs");
 
       const searchInput = document.getElementById("searchInput");
       const clearSearch = document.getElementById("clearSearch");
-
+      const mailList = document.getElementById("mailList");
+      const emptyState = document.getElementById("emptyState");
+      const errorState = document.getElementById("errorState");
       const rangeText = document.getElementById("rangeText");
       const prevPage = document.getElementById("prevPage");
       const nextPage = document.getElementById("nextPage");
       const refreshButton = document.getElementById("refreshButton");
+      const selectAll = document.getElementById("selectAll");
 
-      const viewHeading = document.getElementById("viewHeading");
-      const viewDescription = document.getElementById("viewDescription");
-
-      const openSettingsButton = document.getElementById("openSettingsButton");
-      const openAccountButton = document.getElementById("openAccountButton");
-      const settingsShortcut = document.getElementById("settingsShortcut");
-      const accountShortcut = document.getElementById("accountShortcut");
-
-      const systemNav = document.getElementById("systemNav");
-      const labelNav = document.getElementById("labelNav");
-      const adminNav = document.getElementById("adminNav");
-      const topTabs = document.getElementById("topTabs");
-
-      const countIds = [
+      const countKeys = [
         "inbox","starred","sent","drafts","all","spam","trash",
         "clients","orders","updates"
       ];
-
-      const viewMeta = {
-        inbox: {
-          title: "Inbox",
-          description: "Incoming system and business correspondence.",
-          endpoint: "/api/mail/views/inbox",
-          panel: "mail"
-        },
-        starred: {
-          title: "Starred",
-          description: "Flagged messages that matter most.",
-          endpoint: "/api/mail/views/starred",
-          panel: "mail"
-        },
-        sent: {
-          title: "Sent",
-          description: "Messages already sent from Astral Forge identities.",
-          endpoint: "/api/mail/views/sent",
-          panel: "mail"
-        },
-        drafts: {
-          title: "Drafts",
-          description: "Messages saved but not yet sent.",
-          endpoint: "/api/mail/views/drafts",
-          panel: "mail"
-        },
-        all: {
-          title: "All Mail",
-          description: "Every stored message across active folders.",
-          endpoint: "/api/mail/views/all",
-          panel: "mail"
-        },
-        spam: {
-          title: "Spam",
-          description: "Messages marked as suspicious or unwanted.",
-          endpoint: "/api/mail/views/spam",
-          panel: "mail"
-        },
-        trash: {
-          title: "Trash",
-          description: "Messages removed from active mail views.",
-          endpoint: "/api/mail/views/trash",
-          panel: "mail"
-        },
-        clients: {
-          title: "Clients",
-          description: "Correspondence tied to players, customers, and direct client contact.",
-          endpoint: "/api/mail/views/clients",
-          panel: "mail"
-        },
-        orders: {
-          title: "Orders",
-          description: "Mail tied to orders, receipts, fulfillment, and store activity.",
-          endpoint: "/api/mail/views/orders",
-          panel: "mail"
-        },
-        updates: {
-          title: "Updates",
-          description: "Platform, system, billing, and service notifications.",
-          endpoint: "/api/mail/views/updates",
-          panel: "mail"
-        },
-        settings: {
-          title: "Settings",
-          description: "Mail configuration and routing controls.",
-          endpoint: null,
-          panel: "settings"
-        },
-        account: {
-          title: "Account",
-          description: "Mailbox identities connected to Astral Forge.",
-          endpoint: null,
-          panel: "account"
-        }
-      };
 
       const state = {
         currentView: "inbox",
         messages: [],
         filteredMessages: [],
-        counts: {},
+        query: "",
         page: 1,
         perPage: 50,
-        query: ""
+        counts: {}
+      };
+
+      const viewEndpoints = {
+        inbox: "/api/mail/views/inbox",
+        starred: "/api/mail/views/starred",
+        sent: "/api/mail/views/sent",
+        drafts: "/api/mail/views/drafts",
+        all: "/api/mail/views/all",
+        spam: "/api/mail/views/spam",
+        trash: "/api/mail/views/trash",
+        clients: "/api/mail/views/clients",
+        orders: "/api/mail/views/orders",
+        updates: "/api/mail/views/updates"
       };
 
       function escapeHtml(value){
@@ -1463,7 +1597,9 @@
 
       function closeSidebar(){
         sidebar.classList.remove("open");
-        overlay.classList.remove("show");
+        if(!accountCard.classList.contains("open") && !settingsCard.classList.contains("open")){
+          overlay.classList.remove("show");
+        }
       }
 
       function toggleSidebar(){
@@ -1479,62 +1615,57 @@
         composeWindow.classList.remove("open");
       }
 
-      function setActiveNav(view){
-        document.querySelectorAll(".nav-item").forEach(item => {
-          item.classList.toggle("active", item.dataset.view === view);
-        });
-
-        document.querySelectorAll(".tab").forEach(tab => {
-          tab.classList.toggle("active", tab.dataset.view === view);
-        });
-      }
-
-      function showPanel(type){
-        mailList.classList.add("hidden");
-        emptyState.classList.add("hidden");
-        errorState.classList.add("hidden");
-        settingsPanel.classList.add("hidden");
-        accountPanel.classList.add("hidden");
-
-        if(type === "mail"){
-          mailList.classList.remove("hidden");
-        } else if(type === "settings"){
-          settingsPanel.classList.remove("hidden");
-        } else if(type === "account"){
-          accountPanel.classList.remove("hidden");
+      function closeFloatingCards(){
+        accountCard.classList.remove("open");
+        settingsCard.classList.remove("open");
+        if(!sidebar.classList.contains("open")){
+          overlay.classList.remove("show");
         }
       }
 
-      function updateHeader(){
-        const meta = viewMeta[state.currentView] || viewMeta.inbox;
-        viewHeading.textContent = meta.title;
-        viewDescription.textContent = meta.description;
-        showPanel(meta.panel);
+      function openAccountCardFn(){
+        settingsCard.classList.remove("open");
+        accountCard.classList.add("open");
+        overlay.classList.add("show");
+      }
+
+      function openSettingsCardFn(){
+        accountCard.classList.remove("open");
+        settingsCard.classList.add("open");
+        overlay.classList.add("show");
+      }
+
+      function setActiveView(view){
+        state.currentView = view;
+
+        document.querySelectorAll("[data-view]").forEach(el => {
+          el.classList.toggle("active", el.dataset.view === view);
+        });
       }
 
       function updateCounts(counts){
         state.counts = counts || {};
 
-        countIds.forEach(key => {
-          const value = state.counts[key];
-          const target = document.getElementById(`count-${key}`);
-          if(target){
-            target.textContent = Number.isFinite(value) ? String(value) : "—";
+        countKeys.forEach(key => {
+          const el = document.getElementById(`count-${key}`);
+          if(el){
+            const value = state.counts[key];
+            el.textContent = Number.isFinite(value) ? String(value) : "—";
           }
         });
 
-        const tabInbox = document.getElementById("tab-badge-inbox");
-        const tabClients = document.getElementById("tab-badge-clients");
-        const tabOrders = document.getElementById("tab-badge-orders");
-        const tabUpdates = document.getElementById("tab-badge-updates");
+        const badgeInbox = document.getElementById("tab-badge-inbox");
+        const badgeClients = document.getElementById("tab-badge-clients");
+        const badgeOrders = document.getElementById("tab-badge-orders");
+        const badgeUpdates = document.getElementById("tab-badge-updates");
 
-        if(tabInbox) tabInbox.textContent = Number.isFinite(state.counts.inbox) ? String(state.counts.inbox) : "0";
-        if(tabClients) tabClients.textContent = Number.isFinite(state.counts.clients) ? String(state.counts.clients) : "0";
-        if(tabOrders) tabOrders.textContent = Number.isFinite(state.counts.orders) ? String(state.counts.orders) : "0";
-        if(tabUpdates) tabUpdates.textContent = Number.isFinite(state.counts.updates) ? String(state.counts.updates) : "0";
+        if(badgeInbox) badgeInbox.textContent = Number.isFinite(state.counts.inbox) ? String(state.counts.inbox) : "0";
+        if(badgeClients) badgeClients.textContent = Number.isFinite(state.counts.clients) ? String(state.counts.clients) : "0";
+        if(badgeOrders) badgeOrders.textContent = Number.isFinite(state.counts.orders) ? String(state.counts.orders) : "0";
+        if(badgeUpdates) badgeUpdates.textContent = Number.isFinite(state.counts.updates) ? String(state.counts.updates) : "0";
       }
 
-      function renderMessageRow(msg){
+      function renderRow(msg){
         const unreadClass = msg.read ? "" : " unread";
         const starChar = msg.starred ? "★" : "☆";
         const starClass = msg.starred ? "star active" : "star";
@@ -1545,38 +1676,14 @@
             <div class="${starClass}" data-action="star">${starChar}</div>
             <div class="sender">${escapeHtml(msg.from)}</div>
             <div class="preview">
-              <span class="subject">${escapeHtml(msg.subject)}</span>
-              ${msg.preview ? ` — ${escapeHtml(msg.preview)}` : ""}
+              <span class="subject">${escapeHtml(msg.subject)}</span>${msg.preview ? ` — ${escapeHtml(msg.preview)}` : ""}
             </div>
             <div class="time">${escapeHtml(formatDate(msg.timestamp))}</div>
           </div>
         `;
       }
 
-      function applySearch(){
-        const query = state.query.trim().toLowerCase();
-
-        if(!query){
-          state.filteredMessages = [...state.messages];
-        } else {
-          state.filteredMessages = state.messages.filter(msg => {
-            const haystack = [
-              msg.from,
-              msg.subject,
-              msg.preview,
-              ...(msg.labels || []),
-              msg.folder
-            ].join(" ").toLowerCase();
-
-            return haystack.includes(query);
-          });
-        }
-
-        state.page = 1;
-        renderCurrentPage();
-      }
-
-      function renderCurrentPage(){
+      function renderPage(){
         const total = state.filteredMessages.length;
         const start = (state.page - 1) * state.perPage;
         const end = Math.min(start + state.perPage, total);
@@ -1584,6 +1691,7 @@
 
         mailList.innerHTML = "";
         emptyState.classList.add("hidden");
+        errorState.classList.add("hidden");
 
         if(!total){
           rangeText.textContent = "0–0 of 0";
@@ -1593,7 +1701,7 @@
           return;
         }
 
-        mailList.innerHTML = pageItems.map(renderMessageRow).join("");
+        mailList.innerHTML = pageItems.map(renderRow).join("");
         rangeText.textContent = `${start + 1}–${end} of ${total}`;
 
         const totalPages = Math.ceil(total / state.perPage);
@@ -1601,6 +1709,29 @@
         nextPage.disabled = state.page >= totalPages;
 
         bindRowInteractions();
+      }
+
+      function applySearch(){
+        const q = state.query.trim().toLowerCase();
+
+        if(!q){
+          state.filteredMessages = [...state.messages];
+        } else {
+          state.filteredMessages = state.messages.filter(msg => {
+            const haystack = [
+              msg.from,
+              msg.subject,
+              msg.preview,
+              msg.folder,
+              ...(msg.labels || [])
+            ].join(" ").toLowerCase();
+
+            return haystack.includes(q);
+          });
+        }
+
+        state.page = 1;
+        renderPage();
       }
 
       function bindRowInteractions(){
@@ -1612,29 +1743,29 @@
             const id = row?.dataset?.id;
             if(!id) return;
 
-            const isActive = star.classList.contains("active");
-            star.classList.toggle("active", !isActive);
-            star.textContent = !isActive ? "★" : "☆";
+            const msg = state.messages.find(m => m.id === id);
+            const nextStarred = !(msg && msg.starred);
 
-            const msg = state.messages.find(item => item.id === id);
             if(msg){
-              msg.starred = !isActive;
+              msg.starred = nextStarred;
             }
 
+            star.classList.toggle("active", nextStarred);
+            star.textContent = nextStarred ? "★" : "☆";
+
             try{
-              await fetch(`/api/mail/${!isActive ? "star" : "unstar"}/${encodeURIComponent(id)}`, {
-                method: "POST"
+              await fetch(`/api/mail/${nextStarred ? "star" : "unstar"}/${encodeURIComponent(id)}`, {
+                method:"POST"
               });
-            } catch (err){
-              console.error("Star toggle failed:", err);
+            } catch(err){
+              console.error("Failed to toggle star:", err);
             }
           });
         });
 
         document.querySelectorAll(".mail-row").forEach(row => {
           row.addEventListener("click", async (event) => {
-            const target = event.target;
-            if(target && (target.classList.contains("row-check") || target.dataset.action === "star")){
+            if(event.target.closest(".row-check") || event.target.closest("[data-action='star']")){
               return;
             }
 
@@ -1642,18 +1773,17 @@
             if(!id) return;
 
             row.classList.remove("unread");
-
-            const msg = state.messages.find(item => item.id === id);
+            const msg = state.messages.find(m => m.id === id);
             if(msg){
               msg.read = true;
             }
 
             try{
               await fetch(`/api/mail/read/${encodeURIComponent(id)}`, {
-                method: "POST"
+                method:"POST"
               });
-            } catch (err){
-              console.error("Mark read failed:", err);
+            } catch(err){
+              console.error("Failed to mark read:", err);
             }
 
             window.location.href = `/message/?id=${encodeURIComponent(id)}`;
@@ -1662,46 +1792,31 @@
       }
 
       async function loadView(view){
-        const meta = viewMeta[view];
-        if(!meta) return;
+        const endpoint = viewEndpoints[view];
+        if(!endpoint) return;
 
-        state.currentView = view;
-        setActiveNav(view);
-        updateHeader();
-
-        if(meta.panel !== "mail"){
-          state.messages = [];
-          state.filteredMessages = [];
-          rangeText.textContent = "0–0 of 0";
-          mailList.innerHTML = "";
-          emptyState.classList.add("hidden");
-          errorState.classList.add("hidden");
-          prevPage.disabled = true;
-          nextPage.disabled = true;
-          return;
-        }
-
+        setActiveView(view);
+        selectAll.checked = false;
         mailList.innerHTML = "";
         emptyState.classList.add("hidden");
         errorState.classList.add("hidden");
         rangeText.textContent = "Loading…";
 
         try{
-          const response = await fetch(meta.endpoint, {
-            method: "GET",
-            headers: { "Accept": "application/json" },
-            cache: "no-store"
+          const response = await fetch(endpoint, {
+            method:"GET",
+            headers:{ "Accept":"application/json" },
+            cache:"no-store"
           });
 
           if(!response.ok){
             if(response.status === 404){
               state.messages = [];
               state.filteredMessages = [];
-              renderCurrentPage();
+              renderPage();
               return;
             }
-
-            throw new Error(`Failed loading ${view}: ${response.status}`);
+            throw new Error(`View failed: ${response.status}`);
           }
 
           const data = await response.json();
@@ -1709,7 +1824,7 @@
             ? data.messages.map(normalizeMessage).filter(Boolean)
             : [];
 
-          messages.sort((a, b) => {
+          messages.sort((a,b) => {
             const aTime = new Date(a.timestamp || 0).getTime() || 0;
             const bTime = new Date(b.timestamp || 0).getTime() || 0;
             return bTime - aTime;
@@ -1718,8 +1833,8 @@
           state.messages = messages;
           updateCounts(data?.counts || {});
           applySearch();
-        } catch (error){
-          console.error(error);
+        } catch(err){
+          console.error(err);
           state.messages = [];
           state.filteredMessages = [];
           mailList.innerHTML = "";
@@ -1732,6 +1847,49 @@
 
       async function refreshCurrentView(){
         await loadView(state.currentView);
+      }
+
+      function renderIdentityRow(identity, variant){
+        const letter = (identity.name || identity.email || "A").trim().charAt(0).toUpperCase() || "A";
+        return `
+          <div class="card-row">
+            <div class="card-row-left">
+              <div class="mini-avatar ${variant}">${escapeHtml(letter)}</div>
+              <div class="identity-meta">
+                <strong>${escapeHtml(identity.name || identity.email || "Mailbox")}</strong>
+                <span>${escapeHtml(identity.email || "")}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      async function loadAccountData(){
+        try{
+          const [accountRes, identitiesRes] = await Promise.all([
+            fetch("/api/mail/account", { headers:{ "Accept":"application/json" }, cache:"no-store" }).catch(() => null),
+            fetch("/api/mail/account/identities", { headers:{ "Accept":"application/json" }, cache:"no-store" }).catch(() => null)
+          ]);
+
+          if(accountRes && accountRes.ok){
+            const account = await accountRes.json();
+            accountPrimaryEmail.textContent = account?.primaryEmail || "scribe@astralforge.studio";
+            accountPrimaryName.textContent = account?.displayName || "ScaleScribe";
+          }
+
+          if(identitiesRes && identitiesRes.ok){
+            const data = await identitiesRes.json();
+            const identities = Array.isArray(data?.identities) ? data.identities : [];
+            if(identities.length){
+              const variants = ["gold","pink","blue"];
+              accountIdentityList.innerHTML = identities
+                .map((identity, index) => renderIdentityRow(identity, variants[index % variants.length]))
+                .join("");
+            }
+          }
+        } catch(err){
+          console.error("Account data failed:", err);
+        }
       }
 
       async function sendMessage(){
@@ -1752,16 +1910,16 @@
 
         try{
           const response = await fetch("/api/mail/send", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json"
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json",
+              "Accept":"application/json"
             },
             body: JSON.stringify(payload)
           });
 
           if(!response.ok){
-            throw new Error(`Send failed with status ${response.status}`);
+            throw new Error(`Send failed: ${response.status}`);
           }
 
           toField.value = "";
@@ -1769,16 +1927,15 @@
           editor.innerHTML = "";
           closeComposeWindow();
           await loadView("sent");
-        } catch (error){
-          console.error("Send failed:", error);
+        } catch(err){
+          console.error("Send failed:", err);
         }
       }
 
-      function bindViewButtons(container){
+      function bindViewContainer(container){
         container.addEventListener("click", (event) => {
           const button = event.target.closest("[data-view]");
           if(!button) return;
-
           const view = button.dataset.view;
           if(!view) return;
 
@@ -1788,11 +1945,35 @@
       }
 
       menuToggle.addEventListener("click", toggleSidebar);
-      overlay.addEventListener("click", closeSidebar);
+
+      overlay.addEventListener("click", () => {
+        closeSidebar();
+        closeFloatingCards();
+      });
 
       composeBtn.addEventListener("click", openCompose);
-      composeButtonHeader.addEventListener("click", openCompose);
       closeCompose.addEventListener("click", closeComposeWindow);
+      sendButton.addEventListener("click", sendMessage);
+
+      accountToggle.addEventListener("click", async () => {
+        if(accountCard.classList.contains("open")){
+          closeFloatingCards();
+          return;
+        }
+        await loadAccountData();
+        openAccountCardFn();
+      });
+
+      settingsToggle.addEventListener("click", () => {
+        if(settingsCard.classList.contains("open")){
+          closeFloatingCards();
+          return;
+        }
+        openSettingsCardFn();
+      });
+
+      closeAccountCard.addEventListener("click", closeFloatingCards);
+      closeSettingsCard.addEventListener("click", closeFloatingCards);
 
       refreshButton.addEventListener("click", refreshCurrentView);
 
@@ -1810,27 +1991,41 @@
       prevPage.addEventListener("click", () => {
         if(state.page <= 1) return;
         state.page -= 1;
-        renderCurrentPage();
+        renderPage();
       });
 
       nextPage.addEventListener("click", () => {
         const totalPages = Math.ceil(state.filteredMessages.length / state.perPage);
         if(state.page >= totalPages) return;
         state.page += 1;
-        renderCurrentPage();
+        renderPage();
       });
 
-      bindViewButtons(systemNav);
-      bindViewButtons(labelNav);
-      bindViewButtons(adminNav);
-      bindViewButtons(topTabs);
+      selectAll.addEventListener("change", () => {
+        document.querySelectorAll(".row-check").forEach(box => {
+          box.checked = selectAll.checked;
+        });
+      });
 
-      openSettingsButton.addEventListener("click", () => loadView("settings"));
-      openAccountButton.addEventListener("click", () => loadView("account"));
-      settingsShortcut.addEventListener("click", () => loadView("settings"));
-      accountShortcut.addEventListener("click", () => loadView("account"));
+      document.getElementById("manageAccountButton").addEventListener("click", () => {
+        window.location.href = "/account/";
+      });
 
-      document.getElementById("sendMessageButton").addEventListener("click", sendMessage);
+      document.getElementById("addMailboxButton").addEventListener("click", () => {
+        window.location.href = "/account/";
+      });
+
+      document.getElementById("signOutButton").addEventListener("click", async () => {
+        try{
+          await fetch("/api/mail/logout", { method:"POST" });
+        } catch(err){
+          console.error("Logout failed:", err);
+        }
+      });
+
+      bindViewContainer(folderNav);
+      bindViewContainer(labelNav);
+      bindViewContainer(topTabs);
 
       window.addEventListener("resize", () => {
         if(window.innerWidth > 900){
