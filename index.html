@@ -76,7 +76,6 @@
       height:100vh;
     }
 
-    /* Topbar */
     .topbar{
       display:grid;
       grid-template-columns:auto 1fr auto;
@@ -208,7 +207,6 @@
       user-select:none;
     }
 
-    /* Main shell */
     .shell{
       display:grid;
       grid-template-columns:var(--sidebar-w) 1fr;
@@ -307,7 +305,6 @@
       letter-spacing:.12em;
     }
 
-    /* Content */
     .content{
       padding:14px 14px 18px;
       min-width:0;
@@ -533,7 +530,6 @@
       font-size:15px;
     }
 
-    /* Overlay dimmer */
     .overlay{
       position:fixed;
       inset:0;
@@ -549,7 +545,6 @@
       pointer-events:auto;
     }
 
-    /* Compose window */
     .compose-window{
       position:fixed;
       right:26px;
@@ -725,7 +720,6 @@
       background:rgba(60,35,12,.08);
     }
 
-    /* Floating account/settings cards */
     .floating-card{
       position:fixed;
       top:84px;
@@ -852,6 +846,7 @@
       align-items:center;
       gap:12px;
       min-width:0;
+      width:100%;
     }
 
     .mini-avatar{
@@ -896,10 +891,6 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
-    }
-
-    .settings-group{
-      padding:0 14px 16px;
     }
 
     .settings-panel{
@@ -1283,7 +1274,6 @@
 
   <div class="overlay" id="overlay"></div>
 
-  <!-- Account overlay -->
   <section class="floating-card" id="accountCard" aria-label="Account menu">
     <div class="floating-card-header">
       <div class="floating-card-title">Account</div>
@@ -1293,7 +1283,7 @@
     <div class="account-top">
       <div class="account-email" id="accountPrimaryEmail">scribe@astralforge.studio</div>
       <div class="account-avatar">S</div>
-      <div class="account-name" id="accountPrimaryName">ScaleScribe</div>
+      <div class="account-name" id="accountPrimaryName">Scribe</div>
       <button class="ghost-pill" id="manageAccountButton">Manage Mail Account</button>
     </div>
 
@@ -1303,7 +1293,7 @@
           <div class="card-row-left">
             <div class="mini-avatar gold">S</div>
             <div class="identity-meta">
-              <strong>ScaleScribe</strong>
+              <strong>Scribe</strong>
               <span>scribe@astralforge.studio</span>
             </div>
           </div>
@@ -1322,20 +1312,10 @@
             </div>
           </div>
         </div>
-
-        <div class="card-row" id="signOutButton">
-          <div class="card-row-left">
-            <div class="identity-meta">
-              <strong>Sign out</strong>
-              <span>End the current Astral Forge Mail session</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- Settings overlay -->
   <section class="floating-card" id="settingsCard" aria-label="Settings menu">
     <div class="floating-card-header">
       <div class="floating-card-title">Mail Settings</div>
@@ -1389,7 +1369,6 @@
     </div>
   </section>
 
-  <!-- Compose -->
   <section class="compose-window" id="composeWindow" aria-label="Compose email">
     <div class="compose-top">
       <span>New Message</span>
@@ -1437,59 +1416,6 @@
   <script>
     (function(){
       "use strict";
-
-      /*
-        LIVE DATA CONTRACT
-
-        Views:
-          GET /api/mail/views/inbox
-          GET /api/mail/views/starred
-          GET /api/mail/views/sent
-          GET /api/mail/views/drafts
-          GET /api/mail/views/all
-          GET /api/mail/views/spam
-          GET /api/mail/views/trash
-          GET /api/mail/views/clients
-          GET /api/mail/views/orders
-          GET /api/mail/views/updates
-
-        Optional actions:
-          POST /api/mail/star/:id
-          POST /api/mail/unstar/:id
-          POST /api/mail/read/:id
-          POST /api/mail/send
-          GET  /api/mail/account
-          GET  /api/mail/account/identities
-
-        Example message response:
-        {
-          "messages": [
-            {
-              "id": "msg_001",
-              "from": "Cloudflare",
-              "subject": "Zero Trust deployment update",
-              "preview": "your DNS filtering history and deployment options are now available.",
-              "timestamp": "2026-03-17T14:32:00Z",
-              "read": false,
-              "starred": true,
-              "labels": ["updates"],
-              "folder": "inbox"
-            }
-          ],
-          "counts": {
-            "inbox": 12,
-            "starred": 2,
-            "sent": 9,
-            "drafts": 1,
-            "all": 40,
-            "spam": 0,
-            "trash": 0,
-            "clients": 3,
-            "orders": 4,
-            "updates": 5
-          }
-        }
-      */
 
       const overlay = document.getElementById("overlay");
       const sidebar = document.getElementById("sidebar");
@@ -1850,7 +1776,7 @@
       }
 
       function renderIdentityRow(identity, variant){
-        const letter = (identity.name || identity.email || "A").trim().charAt(0).toUpperCase() || "A";
+        const letter = (identity.name || identity.email || "S").trim().charAt(0).toUpperCase() || "S";
         return `
           <div class="card-row">
             <div class="card-row-left">
@@ -1874,7 +1800,10 @@
           if(accountRes && accountRes.ok){
             const account = await accountRes.json();
             accountPrimaryEmail.textContent = account?.primaryEmail || "scribe@astralforge.studio";
-            accountPrimaryName.textContent = account?.displayName || "ScaleScribe";
+            accountPrimaryName.textContent = account?.displayName || "Scribe";
+          } else {
+            accountPrimaryEmail.textContent = "scribe@astralforge.studio";
+            accountPrimaryName.textContent = "Scribe";
           }
 
           if(identitiesRes && identitiesRes.ok){
@@ -1885,10 +1814,47 @@
               accountIdentityList.innerHTML = identities
                 .map((identity, index) => renderIdentityRow(identity, variants[index % variants.length]))
                 .join("");
+            } else {
+              accountIdentityList.innerHTML = `
+                <div class="card-row">
+                  <div class="card-row-left">
+                    <div class="mini-avatar gold">S</div>
+                    <div class="identity-meta">
+                      <strong>Scribe</strong>
+                      <span>scribe@astralforge.studio</span>
+                    </div>
+                  </div>
+                </div>
+              `;
             }
+          } else {
+            accountIdentityList.innerHTML = `
+              <div class="card-row">
+                <div class="card-row-left">
+                  <div class="mini-avatar gold">S</div>
+                  <div class="identity-meta">
+                    <strong>Scribe</strong>
+                    <span>scribe@astralforge.studio</span>
+                  </div>
+                </div>
+              </div>
+            `;
           }
         } catch(err){
           console.error("Account data failed:", err);
+          accountPrimaryEmail.textContent = "scribe@astralforge.studio";
+          accountPrimaryName.textContent = "Scribe";
+          accountIdentityList.innerHTML = `
+            <div class="card-row">
+              <div class="card-row-left">
+                <div class="mini-avatar gold">S</div>
+                <div class="identity-meta">
+                  <strong>Scribe</strong>
+                  <span>scribe@astralforge.studio</span>
+                </div>
+              </div>
+            </div>
+          `;
         }
       }
 
@@ -2013,14 +1979,6 @@
 
       document.getElementById("addMailboxButton").addEventListener("click", () => {
         window.location.href = "/account/";
-      });
-
-      document.getElementById("signOutButton").addEventListener("click", async () => {
-        try{
-          await fetch("/api/mail/logout", { method:"POST" });
-        } catch(err){
-          console.error("Logout failed:", err);
-        }
       });
 
       bindViewContainer(folderNav);
