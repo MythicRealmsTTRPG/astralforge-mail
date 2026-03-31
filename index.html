@@ -35,9 +35,7 @@
       --overlay-shadow:0 30px 70px rgba(0,0,0,.55);
     }
 
-    *{
-      box-sizing:border-box;
-    }
+    *{ box-sizing:border-box; }
 
     html,body{
       margin:0;
@@ -50,9 +48,7 @@
       color:var(--text);
     }
 
-    body{
-      overflow:hidden;
-    }
+    body{ overflow:hidden; }
 
     button,
     input,
@@ -66,9 +62,7 @@
       text-decoration:none;
     }
 
-    .hidden{
-      display:none !important;
-    }
+    .hidden{ display:none !important; }
 
     .app{
       display:grid;
@@ -205,6 +199,7 @@
       box-shadow:0 6px 14px rgba(0,0,0,.28);
       cursor:pointer;
       user-select:none;
+      flex:none;
     }
 
     .shell{
@@ -248,9 +243,7 @@
         inset 0 1px 0 rgba(255,255,255,.45);
     }
 
-    .nav-group{
-      margin-top:10px;
-    }
+    .nav-group{ margin-top:10px; }
 
     .nav-item{
       display:flex;
@@ -563,9 +556,7 @@
       background:#cdb38c;
     }
 
-    .compose-window.open{
-      display:flex;
-    }
+    .compose-window.open{ display:flex; }
 
     .compose-top{
       height:52px;
@@ -625,9 +616,7 @@
       border-bottom:1px solid rgba(70,45,20,.12);
     }
 
-    .field:last-child{
-      border-bottom:none;
-    }
+    .field:last-child{ border-bottom:none; }
 
     .field label{
       width:54px;
@@ -637,7 +626,8 @@
       flex:none;
     }
 
-    .field input{
+    .field input,
+    .field select{
       flex:1;
       min-width:0;
       border:none;
@@ -649,9 +639,7 @@
       font-family:inherit;
     }
 
-    .field input::placeholder{
-      color:#866848;
-    }
+    .field input::placeholder{ color:#866848; }
 
     .editor{
       flex:1;
@@ -702,9 +690,7 @@
       box-shadow:0 10px 24px rgba(64,36,15,.18);
     }
 
-    .send-btn:hover{
-      filter:brightness(1.05);
-    }
+    .send-btn:hover{ filter:brightness(1.05); }
 
     .tool-btn{
       width:38px;
@@ -735,9 +721,7 @@
       display:none;
     }
 
-    .floating-card.open{
-      display:block;
-    }
+    .floating-card.open{ display:block; }
 
     .floating-card-header{
       display:flex;
@@ -835,10 +819,16 @@
       border:1px solid rgba(255,255,255,.06);
       color:#eadbc2;
       cursor:pointer;
+      transition:.15s ease;
     }
 
     .card-row:hover{
       background:rgba(255,255,255,.05);
+    }
+
+    .card-row.active{
+      border-color:rgba(200,169,107,.28);
+      background:linear-gradient(180deg, rgba(200,169,107,.14), rgba(200,169,107,.08));
     }
 
     .card-row-left{
@@ -860,20 +850,17 @@
       flex:none;
     }
 
-    .mini-avatar.gold{
-      background:linear-gradient(180deg, #bb6c21, #8e3900);
-    }
-
-    .mini-avatar.pink{
-      background:linear-gradient(180deg, #e25386, #c02d62);
-    }
-
-    .mini-avatar.blue{
-      background:linear-gradient(180deg, #2890d8, #1062a8);
-    }
+    .mini-avatar.gold{ background:linear-gradient(180deg, #bb6c21, #8e3900); }
+    .mini-avatar.pink{ background:linear-gradient(180deg, #e25386, #c02d62); }
+    .mini-avatar.blue{ background:linear-gradient(180deg, #2890d8, #1062a8); }
+    .mini-avatar.violet{ background:linear-gradient(180deg, #8e57ff, #5d2dbe); }
+    .mini-avatar.green{ background:linear-gradient(180deg, #2aa66c, #167348); }
+    .mini-avatar.silver{ background:linear-gradient(180deg, #8f97a3, #5b6270); }
+    .mini-avatar.red{ background:linear-gradient(180deg, #d45757, #922b2b); }
 
     .identity-meta{
       min-width:0;
+      flex:1;
     }
 
     .identity-meta strong{
@@ -891,6 +878,16 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
+    }
+
+    .identity-tag{
+      font-size:11px;
+      font-weight:700;
+      color:#f3dec0;
+      border:1px solid rgba(200,169,107,.18);
+      border-radius:999px;
+      padding:5px 8px;
+      flex:none;
     }
 
     .settings-panel{
@@ -937,13 +934,9 @@
     }
 
     @media (max-width: 900px){
-      :root{
-        --sidebar-w:280px;
-      }
+      :root{ --sidebar-w:280px; }
 
-      .shell{
-        grid-template-columns:1fr;
-      }
+      .shell{ grid-template-columns:1fr; }
 
       .sidebar{
         position:fixed;
@@ -956,13 +949,9 @@
         transition:transform .2s ease;
       }
 
-      .sidebar.open{
-        transform:translateX(0);
-      }
+      .sidebar.open{ transform:translateX(0); }
 
-      .content{
-        padding:10px;
-      }
+      .content{ padding:10px; }
 
       .floating-card{
         top:78px;
@@ -971,13 +960,9 @@
     }
 
     @media (max-width: 760px){
-      .brand-text span{
-        display:none;
-      }
+      .brand-text span{ display:none; }
 
-      .searchbar{
-        min-width:0;
-      }
+      .searchbar{ min-width:0; }
 
       .tabs{
         grid-template-columns:repeat(2, minmax(0,1fr));
@@ -989,9 +974,7 @@
         gap:8px;
       }
 
-      .preview{
-        font-size:13px;
-      }
+      .preview{ font-size:13px; }
 
       .compose-window{
         right:12px;
@@ -1015,9 +998,7 @@
         gap:10px;
       }
 
-      .brand-text strong{
-        font-size:1.15rem;
-      }
+      .brand-text strong{ font-size:1.15rem; }
 
       .searchbar{
         height:44px;
@@ -1029,9 +1010,7 @@
         min-height:54px;
       }
 
-      .toolbar-meta{
-        display:none;
-      }
+      .toolbar-meta{ display:none; }
 
       .floating-card{
         right:8px;
@@ -1282,37 +1261,13 @@
 
     <div class="account-top">
       <div class="account-email" id="accountPrimaryEmail">scribe@astralforge.studio</div>
-      <div class="account-avatar">S</div>
+      <div class="account-avatar" id="accountPrimaryAvatar">S</div>
       <div class="account-name" id="accountPrimaryName">Scribe</div>
       <button class="ghost-pill" id="manageAccountButton">Manage Mail Account</button>
     </div>
 
     <div class="card-section">
-      <div class="card-stack" id="accountIdentityList">
-        <div class="card-row">
-          <div class="card-row-left">
-            <div class="mini-avatar gold">S</div>
-            <div class="identity-meta">
-              <strong>Scribe</strong>
-              <span>scribe@astralforge.studio</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card-section">
-      <div class="card-stack">
-        <div class="card-row" id="addMailboxButton">
-          <div class="card-row-left">
-            <div class="mini-avatar blue">+</div>
-            <div class="identity-meta">
-              <strong>Add mailbox identity</strong>
-              <span>support@astralforge.studio, orders@, hello@, and more</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="card-stack" id="accountIdentityList"></div>
     </div>
   </section>
 
@@ -1324,12 +1279,12 @@
 
     <div class="settings-panel">
       <div class="settings-block">
-        <strong>Sender identities</strong>
-        <p>
-          Configure the default From name, From address, reply-to behavior, and approved sending identities for Astral Forge Mail.
+        <strong>Active sender identity</strong>
+        <p id="settingsActiveIdentityText">
+          Messages and view requests currently use scribe@astralforge.studio.
         </p>
         <div class="settings-linkrow">
-          <span>Open sender identity settings</span>
+          <span>Switch from the account menu</span>
           <span>→</span>
         </div>
       </div>
@@ -1381,6 +1336,10 @@
     <div class="compose-body">
       <div class="compose-fields">
         <div class="field">
+          <label for="fromField">From</label>
+          <select id="fromField"></select>
+        </div>
+        <div class="field">
           <label for="toField">To</label>
           <input id="toField" type="text" placeholder="recipient@realm.com" />
         </div>
@@ -1417,6 +1376,18 @@
     (function(){
       "use strict";
 
+      const MAIL_IDENTITIES = [
+        { key:"scribe",  name:"Scribe",   email:"scribe@astralforge.studio",   color:"gold",   system:false, primary:true  },
+        { key:"support", name:"Support",  email:"support@astralforge.studio",  color:"pink",   system:false, primary:false },
+        { key:"hello",   name:"Hello",    email:"hello@astralforge.studio",    color:"blue",   system:false, primary:false },
+        { key:"orders",  name:"Orders",   email:"orders@astralforge.studio",   color:"violet", system:false, primary:false },
+        { key:"billing", name:"Billing",  email:"billing@astralforge.studio",  color:"green",  system:false, primary:false },
+        { key:"play",    name:"Play",     email:"play@astralforge.studio",     color:"silver", system:false, primary:false },
+        { key:"noreply", name:"No Reply", email:"noreply@astralforge.studio",  color:"red",    system:true,  primary:false }
+      ];
+
+      const ACTIVE_IDENTITY_STORAGE_KEY = "astralforge.mail.activeIdentity";
+
       const overlay = document.getElementById("overlay");
       const sidebar = document.getElementById("sidebar");
       const menuToggle = document.getElementById("menuToggle");
@@ -1435,7 +1406,9 @@
 
       const accountPrimaryEmail = document.getElementById("accountPrimaryEmail");
       const accountPrimaryName = document.getElementById("accountPrimaryName");
+      const accountPrimaryAvatar = document.getElementById("accountPrimaryAvatar");
       const accountIdentityList = document.getElementById("accountIdentityList");
+      const settingsActiveIdentityText = document.getElementById("settingsActiveIdentityText");
 
       const folderNav = document.getElementById("folderNav");
       const labelNav = document.getElementById("labelNav");
@@ -1451,6 +1424,7 @@
       const nextPage = document.getElementById("nextPage");
       const refreshButton = document.getElementById("refreshButton");
       const selectAll = document.getElementById("selectAll");
+      const fromField = document.getElementById("fromField");
 
       const countKeys = [
         "inbox","starred","sent","drafts","all","spam","trash",
@@ -1464,7 +1438,8 @@
         query: "",
         page: 1,
         perPage: 50,
-        counts: {}
+        counts: {},
+        activeIdentityKey: getInitialIdentityKey()
       };
 
       const viewEndpoints = {
@@ -1479,6 +1454,29 @@
         orders: "/api/mail/views/orders",
         updates: "/api/mail/views/updates"
       };
+
+      function getInitialIdentityKey(){
+        const stored = localStorage.getItem(ACTIVE_IDENTITY_STORAGE_KEY);
+        if(stored && MAIL_IDENTITIES.some(identity => identity.key === stored)){
+          return stored;
+        }
+        return "scribe";
+      }
+
+      function getActiveIdentity(){
+        return MAIL_IDENTITIES.find(identity => identity.key === state.activeIdentityKey) || MAIL_IDENTITIES[0];
+      }
+
+      function setActiveIdentity(identityKey){
+        if(!MAIL_IDENTITIES.some(identity => identity.key === identityKey)){
+          return;
+        }
+
+        state.activeIdentityKey = identityKey;
+        localStorage.setItem(ACTIVE_IDENTITY_STORAGE_KEY, identityKey);
+        syncIdentityUI();
+        refreshCurrentView();
+      }
 
       function escapeHtml(value){
         return String(value ?? "")
@@ -1534,6 +1532,7 @@
       }
 
       function openCompose(){
+        syncComposeFromField();
         composeWindow.classList.add("open");
       }
 
@@ -1551,6 +1550,7 @@
 
       function openAccountCardFn(){
         settingsCard.classList.remove("open");
+        renderAccountIdentityList();
         accountCard.classList.add("open");
         overlay.classList.add("show");
       }
@@ -1712,9 +1712,14 @@
               console.error("Failed to mark read:", err);
             }
 
-            window.location.href = `/message/?id=${encodeURIComponent(id)}`;
+            window.location.href = `/message/?id=${encodeURIComponent(id)}&account=${encodeURIComponent(getActiveIdentity().email)}`;
           });
         });
+      }
+
+      function buildIdentityQuery(){
+        const activeIdentity = getActiveIdentity();
+        return `account=${encodeURIComponent(activeIdentity.email)}`;
       }
 
       async function loadView(view){
@@ -1729,7 +1734,9 @@
         rangeText.textContent = "Loading…";
 
         try{
-          const response = await fetch(endpoint, {
+          const url = `${endpoint}?${buildIdentityQuery()}`;
+
+          const response = await fetch(url, {
             method:"GET",
             headers:{ "Accept":"application/json" },
             cache:"no-store"
@@ -1775,87 +1782,62 @@
         await loadView(state.currentView);
       }
 
-      function renderIdentityRow(identity, variant){
+      function renderIdentityRow(identity){
+        const isActive = identity.key === state.activeIdentityKey;
         const letter = (identity.name || identity.email || "S").trim().charAt(0).toUpperCase() || "S";
+        const activeBadge = identity.system ? "Automation" : (identity.primary ? "Primary" : "Identity");
+
         return `
-          <div class="card-row">
+          <div class="card-row ${isActive ? "active" : ""}" data-identity-key="${escapeHtml(identity.key)}">
             <div class="card-row-left">
-              <div class="mini-avatar ${variant}">${escapeHtml(letter)}</div>
+              <div class="mini-avatar ${escapeHtml(identity.color)}">${escapeHtml(letter)}</div>
               <div class="identity-meta">
-                <strong>${escapeHtml(identity.name || identity.email || "Mailbox")}</strong>
-                <span>${escapeHtml(identity.email || "")}</span>
+                <strong>${escapeHtml(identity.name)}</strong>
+                <span>${escapeHtml(identity.email)}</span>
               </div>
+              <span class="identity-tag">${escapeHtml(isActive ? "Active" : activeBadge)}</span>
             </div>
           </div>
         `;
       }
 
-      async function loadAccountData(){
-        try{
-          const [accountRes, identitiesRes] = await Promise.all([
-            fetch("/api/mail/account", { headers:{ "Accept":"application/json" }, cache:"no-store" }).catch(() => null),
-            fetch("/api/mail/account/identities", { headers:{ "Accept":"application/json" }, cache:"no-store" }).catch(() => null)
-          ]);
+      function renderAccountIdentityList(){
+        accountIdentityList.innerHTML = MAIL_IDENTITIES
+          .map(renderIdentityRow)
+          .join("");
 
-          if(accountRes && accountRes.ok){
-            const account = await accountRes.json();
-            accountPrimaryEmail.textContent = account?.primaryEmail || "scribe@astralforge.studio";
-            accountPrimaryName.textContent = account?.displayName || "Scribe";
-          } else {
-            accountPrimaryEmail.textContent = "scribe@astralforge.studio";
-            accountPrimaryName.textContent = "Scribe";
-          }
+        accountIdentityList.querySelectorAll("[data-identity-key]").forEach(row => {
+          row.addEventListener("click", () => {
+            const identityKey = row.dataset.identityKey;
+            setActiveIdentity(identityKey);
+            closeFloatingCards();
+          });
+        });
+      }
 
-          if(identitiesRes && identitiesRes.ok){
-            const data = await identitiesRes.json();
-            const identities = Array.isArray(data?.identities) ? data.identities : [];
-            if(identities.length){
-              const variants = ["gold","pink","blue"];
-              accountIdentityList.innerHTML = identities
-                .map((identity, index) => renderIdentityRow(identity, variants[index % variants.length]))
-                .join("");
-            } else {
-              accountIdentityList.innerHTML = `
-                <div class="card-row">
-                  <div class="card-row-left">
-                    <div class="mini-avatar gold">S</div>
-                    <div class="identity-meta">
-                      <strong>Scribe</strong>
-                      <span>scribe@astralforge.studio</span>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }
-          } else {
-            accountIdentityList.innerHTML = `
-              <div class="card-row">
-                <div class="card-row-left">
-                  <div class="mini-avatar gold">S</div>
-                  <div class="identity-meta">
-                    <strong>Scribe</strong>
-                    <span>scribe@astralforge.studio</span>
-                  </div>
-                </div>
-              </div>
-            `;
-          }
-        } catch(err){
-          console.error("Account data failed:", err);
-          accountPrimaryEmail.textContent = "scribe@astralforge.studio";
-          accountPrimaryName.textContent = "Scribe";
-          accountIdentityList.innerHTML = `
-            <div class="card-row">
-              <div class="card-row-left">
-                <div class="mini-avatar gold">S</div>
-                <div class="identity-meta">
-                  <strong>Scribe</strong>
-                  <span>scribe@astralforge.studio</span>
-                </div>
-              </div>
-            </div>
-          `;
-        }
+      function syncComposeFromField(){
+        fromField.innerHTML = MAIL_IDENTITIES
+          .filter(identity => !identity.system)
+          .map(identity => {
+            const selected = identity.key === state.activeIdentityKey ? "selected" : "";
+            return `<option value="${escapeHtml(identity.email)}" data-identity-key="${escapeHtml(identity.key)}" ${selected}>${escapeHtml(identity.name)} &lt;${escapeHtml(identity.email)}&gt;</option>`;
+          })
+          .join("");
+      }
+
+      function syncIdentityUI(){
+        const activeIdentity = getActiveIdentity();
+        const avatarLetter = activeIdentity.name.charAt(0).toUpperCase();
+
+        accountPrimaryEmail.textContent = activeIdentity.email;
+        accountPrimaryName.textContent = activeIdentity.name;
+        accountPrimaryAvatar.textContent = avatarLetter;
+        accountToggle.textContent = avatarLetter;
+
+        settingsActiveIdentityText.textContent = `Messages and view requests currently use ${activeIdentity.email}.`;
+
+        syncComposeFromField();
+        renderAccountIdentityList();
       }
 
       async function sendMessage(){
@@ -1864,6 +1846,7 @@
         const editor = document.getElementById("editor");
 
         const payload = {
+          from: fromField.value,
           to: toField.value.trim(),
           subject: subjectField.value.trim(),
           body: editor.innerHTML.trim()
@@ -1921,12 +1904,11 @@
       closeCompose.addEventListener("click", closeComposeWindow);
       sendButton.addEventListener("click", sendMessage);
 
-      accountToggle.addEventListener("click", async () => {
+      accountToggle.addEventListener("click", () => {
         if(accountCard.classList.contains("open")){
           closeFloatingCards();
           return;
         }
-        await loadAccountData();
         openAccountCardFn();
       });
 
@@ -1973,11 +1955,14 @@
         });
       });
 
-      document.getElementById("manageAccountButton").addEventListener("click", () => {
-        window.location.href = "/account/";
+      fromField.addEventListener("change", () => {
+        const selectedIdentity = MAIL_IDENTITIES.find(identity => identity.email === fromField.value);
+        if(selectedIdentity){
+          setActiveIdentity(selectedIdentity.key);
+        }
       });
 
-      document.getElementById("addMailboxButton").addEventListener("click", () => {
+      document.getElementById("manageAccountButton").addEventListener("click", () => {
         window.location.href = "/account/";
       });
 
@@ -1991,6 +1976,7 @@
         }
       });
 
+      syncIdentityUI();
       loadView("inbox");
     })();
   </script>
